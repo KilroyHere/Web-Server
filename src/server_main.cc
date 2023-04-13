@@ -89,20 +89,20 @@ public:
 private:
   void start_accept()
   {
-<<<<<<< HEAD
-    session* new_session = new session(io_service_);
+    session *new_session = new session(io_service_);
     acceptor_.async_accept(new_session->socket(),
-        boost::bind(&server::handle_accept, this, new_session,
-          boost::asio::placeholders::error));
+                           boost::bind(&server::handle_accept, this, new_session,
+                                       boost::asio::placeholders::error));
   }
+
   void handle_accept(session *new_session,
                      const boost::system::error_code &error)
->>>>>>> Initial Skeleton
   {
     if (!error)
     {
       new_session->start();
     }
+    else
     {
       delete new_session;
     }
@@ -119,15 +119,19 @@ int main(int argc, char *argv[])
   try
   {
     if (argc != 2)
+    {
+      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      return 1;
+    }
+
+    boost::asio::io_service io_service;
+
     using namespace std; // For atoi.
     server s(io_service, atoi(argv[1]));
 
     io_service.run();
   }
-  catch (std::exception& e)
-=======
   catch (std::exception &e)
->>>>>>> Initial Skeleton
   {
     std::cerr << "Exception: " << e.what() << "\n";
   }
