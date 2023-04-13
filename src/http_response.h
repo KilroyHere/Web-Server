@@ -1,0 +1,4 @@
+#ifndef HTTP_RESPONSE_H
+#define HTTP_REPSONSE_H
+
+#endif //HTTP_RESPONSE_H

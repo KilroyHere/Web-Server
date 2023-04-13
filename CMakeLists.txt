@@ -38,11 +38,12 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 
-# add_library(server_main_lib src/server_main_lib.cc)
+add_library(http_server_lib src/http_server.cc)
+add_library(session_lib src/session.cc)
 
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server Boost::system)
+target_link_libraries(server Boost::system http_server_lib session_lib)
 
 
 # add_executable(example_lib_test tests/example_lib_test.cc)
