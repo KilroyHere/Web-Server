@@ -20,6 +20,4 @@ private:
   tcp::acceptor acceptor_;
 };
 
-
-
 #endif // HTTP_SERVER_H

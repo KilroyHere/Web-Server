@@ -4,7 +4,9 @@ HTTPserver::HTTPserver(boost::asio::io_service &io_service, short port)
     : io_service_(io_service),
       acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
 {
+
   start_accept();
+  io_service_.run();
 }
 
 void HTTPserver::start_accept()
@@ -25,6 +27,6 @@ void HTTPserver::handle_accept(session *new_session, const boost::system::error_
   {
     delete new_session;
   }
-
+  // Starts a session and looks for new connecrtions to be accepted
   start_accept();
 }
