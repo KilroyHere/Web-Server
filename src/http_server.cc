@@ -27,6 +27,6 @@ void HTTPserver::handle_accept(session *new_session, const boost::system::error_
   {
     delete new_session;
   }
-  // Starts a session and looks for new connecrtions to be accepted
+  // Starts a session and looks for new connections to be accepted
   start_accept();
 }

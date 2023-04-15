@@ -29,12 +29,16 @@ std::vector<char> response::to_buffer()
   }
   response += crlf;
   response += content_;
-
+  // LOGGING:
+  std::cerr<<"=====RESPONSE=====\n";;
   for (auto c : response)
   {
+    // LOGGING:
     std::cerr << c;
     buffer.push_back(c);
   }
+  // LOGGING:
+  std::cerr<<"\n==================\n";
   return buffer;
 }
 

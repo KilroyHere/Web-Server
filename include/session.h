@@ -14,6 +14,7 @@ using boost::asio::ip::tcp;
 class session
 {
 public:
+  ~session();
   session(boost::asio::io_service &io_service);
   tcp::socket &get_socket();
   void start();

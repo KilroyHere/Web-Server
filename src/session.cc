@@ -6,6 +6,10 @@ session::session(boost::asio::io_service &io_service)
   data_.resize(max_buffer_size);
 }
 
+session::~session()
+{
+  socket_.close();
+}
 tcp::socket &session::get_socket()
 {
   return socket_;
@@ -23,7 +27,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
 {
   if (!error)
   {
-
+    // LOGGING:
     for (int i = 0; i < bytes_transferred; i++)
     {
       std::cerr << data_[i];
@@ -33,8 +37,8 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     // If read the header successfully
     if (result == request_parser::good)
     {
-      // Header Read
-      std::cerr << "\n==================\nGOOD REQUEST!!\n==================\n";
+      // LOGGING:
+      std::cerr << "==================\nGOOD REQUEST!!\n==================\n";
       int read_from = parser_.read_from_;
       parser_.reset();
       request_.set_headers_map();
@@ -43,7 +47,6 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
       if (request_.headers_map.find("content-length") != request_.headers_map.end())
       {
         std::string content_length = request_.headers_map["content-length"];
-
         read_body(read_from, bytes_transferred, stoi(content_length));
       }
 
@@ -72,7 +75,8 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     // If the HTTP request is malformed
     else if (result == request_parser::bad)
     {
-      std::cerr << "\n==================\nBAD_REQUEST!!\n==================\n";
+      // LOGGING:
+      std::cerr << "==================\nBAD_REQUEST!!\n==================\n";
       parser_.reset();
       // TODO: Respond (400 Bad Request)
       // Close connection
