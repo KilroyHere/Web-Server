@@ -2,7 +2,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include "http_server.h"
-#include "../config/config_parser.h"
+#include "../include/config_parser.h"
 using boost::asio::ip::tcp;
 
 int main(int argc, char *argv[])

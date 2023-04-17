@@ -17,7 +17,7 @@ RUN ctest --output-on_failure
 FROM ubuntu:jammy as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
-COPY --from=builder /usr/src/project/config/deploy.conf .
+COPY --from=builder /usr/src/project/config/deploy_config .
 
 EXPOSE 8080 80
 
@@ -25,4 +25,4 @@ EXPOSE 8080 80
 ENTRYPOINT ["./server"]
 
 # Use CMD to specify arguments to ENTRYPOINT
-CMD ["deploy.conf"]
+CMD ["deploy_config"]

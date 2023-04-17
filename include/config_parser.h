@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 
 class NginxConfig;
 
@@ -22,6 +23,8 @@ class NginxConfig
 public:
   bool query_config(std::vector<std::string> query, std::string& value);
   std::string ToString(int depth = 0);
+  bool relative_path_query(std::vector<std::string> query, std::string& value, int index);
+  bool config_port_num(std::vector<std::string> query, std::string& value);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };
 

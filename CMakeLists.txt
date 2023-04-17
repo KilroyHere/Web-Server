@@ -45,16 +45,17 @@ add_library(http_request_lib src/http_request.cc)
 add_library(http_response_lib src/http_response.cc)
 add_library(config_parser_lib  config/config_parser.cc)
 
+
 add_executable(server src/server_main.cc)
 target_link_libraries(server Boost::system http_server_lib session_lib request_parser_lib http_response_lib http_request_lib config_parser_lib)
 
 
-# add_executable(example_lib_test tests/example_lib_test.cc)
-# target_link_libraries(example_lib_test example_lib gtest_main)
+add_executable(config_parser_test tests/config_parser_test.cc)
+target_link_libraries(config_parser_test config_parser_lib gtest_main)
 
 
-# gtest_discover_tests(example_lib_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 
 # include(cmake/CodeCoverageReportConfig.cmake)
-# generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
+# generate_coverage_report(TARGETS config_parser config_parser_lib TESTS config_parser_test)

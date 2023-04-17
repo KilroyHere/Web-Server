@@ -14,6 +14,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "config_parser.h"
 
@@ -95,6 +96,63 @@ std::string NginxConfigStatement::ToString(int depth)
   }
   serialized_statement.append("\n");
   return serialized_statement;
+}
+
+bool NginxConfig::relative_path_query(std::vector<std::string> query, std::string& value, int index) 
+{
+  std::stack<std::pair<NginxConfig*, int>> mstack;
+  for (auto statement : statements_)
+  {
+    if (query.size() - 1 > index && statement->child_block_.get() != nullptr) 
+    {
+      if (query[index] == statement->tokens_[0]) 
+      {
+        std::pair<NginxConfig*, int> block(statement->child_block_.get(), index + 1);
+        mstack.push(block);
+      }
+      else 
+      {
+        std::pair<NginxConfig*, int> block(statement->child_block_.get(), index);
+        mstack.push(block);
+      }      
+    } 
+    else 
+    {
+      if (query.size() - 1 == index && statement->tokens_.size() > 1 && statement->tokens_[0] == query[index]) 
+      {
+        value = statement->tokens_[1].c_str();
+        return true;
+      }
+    }
+  }
+  while (!mstack.empty()) {
+    std::pair<NginxConfig*, int> curr = mstack.top();
+    mstack.pop();
+    if (curr.second <= query.size() && curr.first->relative_path_query( query, value, curr.second) == true) {
+      return true;
+    }
+  }
+    
+  return false;
+}
+
+bool NginxConfig::config_port_num(std::vector<std::string> query, std::string& value) {
+  std::string result;
+  if (!relative_path_query(query, result, 0)) {
+    return false;
+  }
+  int port = atoi(result.c_str());
+  //valid port number
+  if (0 < port && 65536 > port) 
+  {
+    value = result.c_str();
+    return true;
+  }
+  //invalid port number
+  else
+  {
+    return false;
+  }
 }
 
 const char *NginxConfigParser::TokenTypeAsString(TokenType type)

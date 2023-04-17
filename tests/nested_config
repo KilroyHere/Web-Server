@@ -1,0 +1,8 @@
+http {
+    location /images/ {
+        root /data;
+    }
+    server {
+        listen 8080;
+    }
+}

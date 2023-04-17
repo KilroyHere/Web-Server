@@ -1,0 +1,8 @@
+http {
+    server {
+        location data;{
+            root /data/www;
+        }
+        listen 8080;
+    }
+}

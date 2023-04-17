@@ -1,0 +1,7 @@
+server {
+    listen   ;
+    foo "bar";
+    location data {
+        
+    }
+}

@@ -1,0 +1,8 @@
+http {
+    server {
+#       foo "bar";
+#       bar "foo";
+#       listen 8080;
+        listen 80;
+    }
+}
