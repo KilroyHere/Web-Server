@@ -14,11 +14,11 @@
 std::string name_value_separator = ": ";
 std::string crlf = "\r\n";
 
-std::vector<char> response::to_buffer()
+std::vector<char> Response::to_buffer()
 {
   std::vector<char> buffer;
   std::string response = "";
-  response += status_to_string(status_);
+  response += status_to_string(status_code_);
   for (std::size_t i = 0; i < headers_.size(); ++i)
   {
     response_header &h = headers_[i];
@@ -42,7 +42,7 @@ std::vector<char> response::to_buffer()
   return buffer;
 }
 
-std::string response::status_to_string(int status)
+std::string Response::status_to_string(int status)
 {
   if(status_map_.find(status) != status_map_.end())
   {
@@ -57,9 +57,9 @@ std::string response::status_to_string(int status)
 }
 
 // For Echo server specifically
-void response::set_echo_response(int status, const std::string response_body)
+void Response::set_echo_response(int status, const std::string response_body)
 {
-  status_ = status;
+  status_code_ = status;
   content_ = response_body;
   headers_.resize(2);
   headers_[0].name = "Content-Length";
@@ -68,7 +68,7 @@ void response::set_echo_response(int status, const std::string response_body)
   headers_[1].value = "text/plain";
 }
 
-void response::purge_response()
+void Response::purge_response()
 {
   content_.clear();
   headers_.clear();

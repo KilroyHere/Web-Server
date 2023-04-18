@@ -4,10 +4,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <iostream>
-#include "http_request.h"
-#include "request_parser.h"
-#include "http_request.h"
-#include "http_response.h"
+#include "request_handler.h"
 
 using boost::asio::ip::tcp;
 
@@ -17,7 +14,8 @@ public:
   ~session();
   session(boost::asio::io_service &io_service);
   tcp::socket &get_socket();
-  void start();
+  void async_read();
+  void async_write(std::vector<char> response);
 
 private:
   void read_body(int read_from, int bytes_transferred, int content_length);
@@ -25,11 +23,9 @@ private:
   void handle_write(const boost::system::error_code &error);
 
   tcp::socket socket_;
-  size_t max_buffer_size = 4096;
+  size_t max_buffer_size = 1024;
   std::vector<char> data_;
-  request_parser parser_;
-  request request_;
-  response response_;
+  RequestHandler request_handler_;
 };
 
 #endif // SESSION_H

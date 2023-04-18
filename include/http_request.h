@@ -23,7 +23,7 @@ struct request_header
 };
 
 /// A request received from a client.
-class request
+class Request
 {
 public:
   

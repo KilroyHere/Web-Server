@@ -15,7 +15,7 @@ tcp::socket &session::get_socket()
   return socket_;
 }
 
-void session::start()
+void session::async_read()
 {
   socket_.async_read_some(boost::asio::buffer(data_),
                           boost::bind(&session::handle_read, this,
@@ -32,63 +32,21 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     {
       std::cerr << data_[i];
     }
-    request_parser::result_type result = parser_.parse(request_, data_, bytes_transferred);
+    bool request_handled = request_handler_.handle_request(data_, bytes_transferred);
 
-    // If read the header successfully
-    if (result == request_parser::good)
+    if (request_handled)
     {
-      // LOGGING:
-      std::cerr << "==================\nGOOD REQUEST!!\n==================\n";
-      int read_from = parser_.read_from_;
-      parser_.reset();
-      request_.set_headers_map();
-
-      //  Check for content-length and parse body
-      if (request_.headers_map.find("content-length") != request_.headers_map.end())
+      request_handler_.set_response();
+      async_write(request_handler_.get_response());
+      request_handler_.reset();
+      if (request_handler_.connection_close())
       {
-        std::string content_length = request_.headers_map["content-length"];
-        read_body(read_from, bytes_transferred, stoi(content_length));
+        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+        delete this;
+        return;
       }
-
-      // Echo response
-      std::string response_body = request_.request_headers + request_.request_body;
-      response_.set_echo_response(200, response_body);
-      boost::asio::async_write(socket_, boost::asio::buffer(response_.to_buffer()),
-                               boost::bind(&session::handle_write, this, boost::asio::placeholders::error));
-
-      // If connection:close, end connection
-      if (request_.headers_map.find("connection") != request_.headers_map.end())
-      {
-        if (request_.headers_map["connection"] == "close")
-        {
-          socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-          delete this;
-          return;
-        }
-      }
-
-      // Ready for a new request in the same session
-      request_.purge_request();
-      response_.purge_response();
-      start();
     }
-    // If the HTTP request is malformed
-    else if (result == request_parser::bad)
-    {
-      // LOGGING:
-      std::cerr << "==================\nBAD_REQUEST!!\n==================\n";
-      parser_.reset();
-      // TODO: Respond (400 Bad Request)
-      // Close connection
-      socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-      delete this;
-      return;
-    }
-    // If the parsing of the header is not yet complete
-    else
-    {
-      start();
-    }
+    async_read();
   }
   else
   {
@@ -104,13 +62,10 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
   }
 }
 
-void session::read_body(int read_from, int bytes_transferred, int content_length)
+void session::async_write(std::vector<char> response)
 {
-  for (int i = read_from; i < bytes_transferred; i++)
-  {
-    request_.request_body.push_back(data_[i]);
-  }
-  // TODO: if the body does not fit into this buffer, keep reading.
+  boost::asio::async_write(socket_, boost::asio::buffer(response),
+                           boost::bind(&session::handle_write, this, boost::asio::placeholders::error));
 }
 
 void session::handle_write(const boost::system::error_code &error)

@@ -1,6 +1,6 @@
 #include "http_request.h"
 
-void request::purge_request()
+void Request::purge_request()
 {
   method.clear();
   uri.clear();
@@ -11,7 +11,7 @@ void request::purge_request()
   headers_map.clear();
 }
 
-void request::set_headers_map()
+void Request::set_headers_map()
 {
   for (auto x : headers)
   {

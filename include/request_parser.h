@@ -21,11 +21,11 @@
 struct request;
 
 /// Parser for incoming requests.
-class request_parser
+class RequestParser
 {
 public:
   /// Construct ready to parse the request method.
-  request_parser();
+  RequestParser();
 
   /// Reset to initial parser state.
   void reset();
@@ -45,11 +45,11 @@ public:
   /// been parsed, bad if the data is invalid, indeterminate when more data is
   /// required. The InputIterator return value indicates how much of the input
   /// has been consumed.
-  result_type parse(request &req, std::vector<char> buffer, size_t bytes_transferred);
+  result_type parse(Request &req, std::vector<char> buffer, size_t bytes_transferred);
 
 private:
   /// Handle the next character of input.
-  result_type consume(request &req, char input);
+  result_type consume(Request &req, char input);
 
   /// Check if a byte is an HTTP character.
   static bool is_char(int c);

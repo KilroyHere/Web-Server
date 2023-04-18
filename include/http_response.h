@@ -25,7 +25,7 @@ struct response_header
 };
 
 /// A response to be sent to a client.
-class response
+class Response
 {
 public:
     // Sets the echo response
@@ -41,7 +41,7 @@ private:
     // The content to be sent in the response.
     std::string content_;
     // The status code of the response.
-    int status_;
+    int status_code_;
 
     // Collection of all possible status strings
     struct status

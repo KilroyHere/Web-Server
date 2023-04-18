@@ -43,11 +43,13 @@ add_library(session_lib src/session.cc)
 add_library(request_parser_lib src/request_parser.cc)
 add_library(http_request_lib src/http_request.cc)
 add_library(http_response_lib src/http_response.cc)
+add_library(request_handler_lib  src/request_handler.cc)
+
 add_library(config_parser_lib  config/config_parser.cc)
 
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server Boost::system http_server_lib session_lib request_parser_lib http_response_lib http_request_lib config_parser_lib)
+target_link_libraries(server Boost::system http_server_lib session_lib request_handler_lib request_parser_lib http_response_lib http_request_lib  config_parser_lib )
 
 
 add_executable(config_parser_test tests/config_parser_test.cc)
