@@ -28,7 +28,7 @@ RequestParser::result_type RequestParser::parse(Request &req, std::vector<char> 
     result_type result = consume(req, buffer[i]);
     if (result == good || result == bad)
     {
-      read_from_ = i+1;
+      read_from_ = i + 1;
       return result;
     }
   }
