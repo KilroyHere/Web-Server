@@ -6,25 +6,20 @@ RequestHandler::RequestHandler() : state_(READING_HEADER), connection_close_(fal
 
 bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transferred)
 {
+  // If currenlty reading the header
   if (state_ == READING_HEADER)
   {
     RequestParser::result_type result = parser_.parse(request_, data, bytes_transferred);
-    // If read the header successfully
+    // If read the header successfully and completely
     if (result == RequestParser::good)
     {
       // LOGGING:
       std::cerr << "==================\nGOOD REQUEST!!\n==================\n";
+      response_code_ = 200;
       // TODO: Maybe make this a data member?
       int read_from = parser_.read_from_;
       request_.set_headers_map();
       parser_.reset();
-
-      //  Check for content-length and parse body
-      if (request_.headers_map.find("content-length") != request_.headers_map.end())
-      {
-        state_ = READING_BODY;
-        return read_body(data, read_from, bytes_transferred);
-      }
 
       // If connection:close, end connection
       if (request_.headers_map.find("connection") != request_.headers_map.end())
@@ -33,6 +28,14 @@ bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfe
         {
           connection_close_ = true;
         }
+      }
+
+      //  Check for content-length and parse body
+      if (request_.headers_map.find("content-length") != request_.headers_map.end())
+      {
+        // Switch handler state
+        state_ = READING_BODY;
+        return read_body(data, read_from, bytes_transferred);
       }
       return true;
     }
@@ -45,11 +48,13 @@ bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfe
       connection_close_ = true;
       return true;
     }
+    // If the header hasn't been read completely
     else
     {
       return false;
     }
   }
+  // If currently reading the body
   else
   {
     int read_from = parser_.read_from_;
@@ -75,6 +80,7 @@ bool RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_
   body_read_ += bytes_transferred - read_from;
   if (body_read_ != stoi(request_.headers_map["content-length"]))
   {
+    // If body read not yet copmlete
     return false;
   }
   else
@@ -95,6 +101,7 @@ void RequestHandler::set_response()
   {
     response_.set_echo_response(400, "");
   }
+
 }
 
 std::vector<char> RequestHandler::get_response()

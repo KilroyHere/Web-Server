@@ -10,6 +10,7 @@ session::~session()
 {
   socket_.close();
 }
+
 tcp::socket &session::get_socket()
 {
   return socket_;
@@ -32,13 +33,18 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     {
       std::cerr << data_[i];
     }
+    // Handle the request
     bool request_handled = request_handler_.handle_request(data_, bytes_transferred);
-
+    // If request is handled
     if (request_handled)
     {
+      // Set a response
       request_handler_.set_response();
+      // Send the response
       async_write(request_handler_.get_response());
+      // Reset the handler
       request_handler_.reset();
+      // Close the connection if needed
       if (request_handler_.connection_close())
       {
         socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
@@ -46,6 +52,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
         return;
       }
     }
+    // Keep reading if request not handled or if request handled and connection not closed
     async_read();
   }
   else

@@ -13,15 +13,19 @@ class session
 public:
   ~session();
   session(boost::asio::io_service &io_service);
+  // Gets the socket associated with this session
   tcp::socket &get_socket();
+  // Read from the socket
   void async_read();
+  // Write to the socket
   void async_write(std::vector<char> response);
 
 private:
-  void read_body(int read_from, int bytes_transferred, int content_length);
+  // Callback for async_read, handles the read data
   void handle_read(const boost::system::error_code &error, size_t bytes_transferred);
+  // Callback for async_write
   void handle_write(const boost::system::error_code &error);
-
+  
   tcp::socket socket_;
   size_t max_buffer_size = 1024;
   std::vector<char> data_;
