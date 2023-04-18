@@ -123,6 +123,15 @@ bool NginxConfig::relative_path_query(std::vector<std::string> query, std::strin
         value = statement->tokens_[1].c_str();
         return true;
       }
+      else 
+      {
+        if (statement->child_block_.get() != nullptr)
+        {
+          std::pair<NginxConfig*, int> block(statement->child_block_.get(), index);
+          mstack.push(block);
+        }
+      }
+
     }
   }
   while (!mstack.empty()) {

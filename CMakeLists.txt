@@ -44,7 +44,6 @@ add_library(request_parser_lib src/request_parser.cc)
 add_library(http_request_lib src/http_request.cc)
 add_library(http_response_lib src/http_response.cc)
 add_library(request_handler_lib  src/request_handler.cc)
-
 add_library(config_parser_lib  config/config_parser.cc)
 
 
@@ -57,7 +56,6 @@ target_link_libraries(config_parser_test config_parser_lib gtest_main)
 
 add_executable(request_handler_test tests/request_handler_test.cc)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib http_request_lib http_response_lib gtest_main)
-
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
