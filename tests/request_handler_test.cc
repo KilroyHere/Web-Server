@@ -31,7 +31,7 @@ void extract_from_file(const char *file_name, std::vector<char> &data, size_t &b
   request_file.close();
 }
 
-TEST_F(RequestHandlerTest, normal_request)
+TEST_F(RequestHandlerTest, good_request)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   int status = handler.handle_request(data, bytes_transferred);
@@ -78,4 +78,38 @@ TEST_F(RequestHandlerTest, bad_http_request_3)
   extract_from_file("request_handler_tests/bad_http_request_3", data, bytes_transferred);
   int status = handler.handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_version_request_1)
+{
+  extract_from_file("request_handler_tests/bad_http_version_request_1", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_version_request_2)
+{
+  extract_from_file("request_handler_tests/bad_http_version_request_2", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_version_request_3)
+{
+  extract_from_file("request_handler_tests/bad_http_version_request_3", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, good_request_with_response)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  handler.set_response();
+  response = handler.get_response();
+  bool match = response == response_data;
+  EXPECT_TRUE(match);
 }
