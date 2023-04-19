@@ -33,7 +33,49 @@ void extract_from_file(const char *file_name, std::vector<char> &data, size_t &b
 
 TEST_F(RequestHandlerTest, normal_request)
 {
-  extract_from_file("request_handler_tests/normal_request", data, bytes_transferred);
-  bool failure = handler.handle_request(data, bytes_transferred);
-  EXPECT_TRUE(failure);
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 1);
+}
+
+TEST_F(RequestHandlerTest, indeterminate_request)
+{
+  extract_from_file("request_handler_tests/indeterminate_request", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 0);
+}
+
+TEST_F(RequestHandlerTest, bad_method_start_request)
+{
+  extract_from_file("request_handler_tests/bad_method_start_request", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_method_request)
+{
+  extract_from_file("request_handler_tests/bad_method_request", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_request_1)
+{
+  extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_request_2)
+{
+  extract_from_file("request_handler_tests/bad_http_request_2", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
+}
+
+TEST_F(RequestHandlerTest, bad_http_request_3)
+{
+  extract_from_file("request_handler_tests/bad_http_request_3", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 2);
 }

@@ -4,7 +4,7 @@ RequestHandler::RequestHandler() : state_(READING_HEADER), connection_close_(fal
 {
 }
 
-bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transferred)
+int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transferred)
 {
   // If currenlty reading the header
   if (state_ == READING_HEADER)
@@ -37,7 +37,7 @@ bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfe
         state_ = READING_BODY;
         return read_body(data, read_from, bytes_transferred);
       }
-      return true;
+      return 1;
     }
     // If the HTTP request is malformed
     else if (result == RequestParser::bad)
@@ -46,12 +46,12 @@ bool RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfe
       std::cerr << "==================\nBAD_REQUEST!!\n==================\n";
       response_code_ = 400;
       connection_close_ = true;
-      return true;
+      return 2;
     }
     // If the header hasn't been read completely
     else
     {
-      return false;
+      return 0;
     }
   }
   // If currently reading the body
@@ -81,11 +81,11 @@ bool RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_
   if (body_read_ != stoi(request_.headers_map["content-length"]))
   {
     // If body read not yet copmlete
-    return false;
+    return 0;
   }
   else
   {
-    return true;
+    return 1;
   }
 }
 
@@ -101,7 +101,6 @@ void RequestHandler::set_response()
   {
     response_.set_echo_response(400, "");
   }
-
 }
 
 std::vector<char> RequestHandler::get_response()

@@ -11,8 +11,9 @@ class RequestHandler
 {
 public:
   RequestHandler();
-  // Handle the read data to parse and respond to a request 
-  bool handle_request(std::vector<char> data, size_t bytes_transferred);
+  // Handle the read data to parse and respond to a request
+  // Return Value: 0 for indeterminate, 1 for good request, 2 for bad request
+  int handle_request(std::vector<char> data, size_t bytes_transferred);
   // Get the value of the connection_close_ flag
   bool connection_close();
   // Set the response according to the response_code_

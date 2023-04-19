@@ -34,9 +34,9 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
       std::cerr << data_[i];
     }
     // Handle the request
-    bool request_handled = request_handler_.handle_request(data_, bytes_transferred);
+    int request_handled = request_handler_.handle_request(data_, bytes_transferred);
     // If request is handled
-    if (request_handled)
+    if (request_handled != 0)
     {
       // Set a response
       request_handler_.set_response();
