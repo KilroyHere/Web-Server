@@ -24,8 +24,9 @@ public:
   void reset();
 
 private:
-  // Read the body content of the request
-  bool read_body(std::vector<char> data, int read_from, int bytes_transferred);
+  // Read the body content of the request/
+  // Return Value: 1 for read complete, 0 for read incomplete  
+  int read_body(std::vector<char> data, int read_from, int bytes_transferred);
   // The state of the request_handler
   enum handler_state
   {

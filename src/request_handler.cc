@@ -71,21 +71,22 @@ void RequestHandler::reset()
   response_.purge_response();
 }
 
-bool RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_transferred)
+int RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_transferred)
 {
-  for (int i = read_from; i < bytes_transferred; i++)
+  int content_length = stoi(request_.headers_map["content-length"]);
+
+  for (int i = read_from; i < bytes_transferred && body_read_ < content_length; i++)
   {
     request_.request_body.push_back(data[i]);
+    body_read_ += 1;
   }
-  body_read_ += bytes_transferred - read_from;
-  if (body_read_ != stoi(request_.headers_map["content-length"]))
+  if (body_read_ == content_length)
   {
-    // If body read not yet copmlete
-    return 0;
+    return 1;
   }
   else
   {
-    return 1;
+    return 0;
   }
 }
 

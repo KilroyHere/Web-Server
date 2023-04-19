@@ -11,9 +11,6 @@
 #ifndef HTTP_REQUEST_PARSER_H
 #define HTTP_REQUEST_PARSER_H
 
-#include <boost/logic/tribool.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <tuple>
 #include <vector>
 #include <iostream>
 #include "http_request.h"
