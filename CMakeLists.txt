@@ -47,6 +47,7 @@ add_library(request_handler_lib  src/request_handler.cc)
 add_library(config_parser_lib  config/config_parser.cc)
 
 
+
 add_executable(server src/server_main.cc)
 target_link_libraries(server Boost::system http_server_lib session_lib request_handler_lib request_parser_lib http_response_lib http_request_lib  config_parser_lib )
 
@@ -60,5 +61,12 @@ target_link_libraries(request_handler_test request_handler_lib request_parser_li
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-# include(cmake/CodeCoverageReportConfig.cmake)
-# generate_coverage_report(TARGETS config_parser config_parser_lib TESTS config_parser_test)
+#Generate Unit Test Coverage Report 
+
+ include(cmake/CodeCoverageReportConfig.cmake)
+
+
+ generate_coverage_report(
+    TARGETS config_parser_lib session_lib http_request_lib http_response_lib http_server_lib request_handler_lib request_parser_lib server
+    TESTS config_parser_test request_handler_test
+)

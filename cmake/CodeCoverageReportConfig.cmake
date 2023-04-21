@@ -13,8 +13,9 @@ find_program(GCOVR_PATH gcovr)
 # report
 #
 # generate_coverage_report(
-#     TARGETS [targets...]
-#     TESTS [test_targets...]
+#     TARGETS config_parser session http_request http_response request_handler request_parser server_main
+#     TESTS config_parser_test request_handler_test
+
 # )
 function(generate_coverage_report)
     # Parse arguments
