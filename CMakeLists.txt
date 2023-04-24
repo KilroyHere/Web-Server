@@ -70,3 +70,7 @@ gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOUR
     TARGETS config_parser_lib session_lib http_request_lib http_response_lib http_server_lib request_handler_lib request_parser_lib server
     TESTS config_parser_test request_handler_test
 )
+
+add_test(NAME web_test
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests)

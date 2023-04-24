@@ -43,7 +43,7 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
     else if (result == RequestParser::bad)
     {
       // LOGGING:
-      std::cerr << "==================\nBAD_REQUEST!!\n==================\n";
+      std::cerr << "==================\nBAD REQUEST!!\n==================\n";
       response_code_ = 400;
       connection_close_ = true;
       return 2;
