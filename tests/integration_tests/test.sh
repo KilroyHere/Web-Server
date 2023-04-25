@@ -1,18 +1,19 @@
 #!/bin/bash
 
-touch listen.txt 
-
-../../build/bin/server ../../config/server_config > ./listen.txt 2>&1 &
-
 clean_up () {
     kill "$!"
     rm curl.txt nc.txt listen.txt
+    sed -i "s/localhost:$1/localhost/g" curl_expected.txt
 }
 
 curl_call() {
     touch curl.txt
-    curl localhost:8080 -o curl.txt -s -s
+    curl localhost:"$1" -o curl.txt -s -s
     request=$(cat ./listen.txt | grep "GOOD REQUEST")
+    if [ "$1" != "80" ]
+    then 
+        sed -i "s/localhost/localhost:$1/g" curl_expected.txt
+    fi
 
     diff curl.txt curl_expected.txt -w -I 'User-Agent: curl/*'
 
@@ -32,13 +33,14 @@ curl_call() {
         exit 1
     fi
 
+    sed -i "s/localhost:$1/localhost/g" curl_expected.txt
     echo "Correct curl response"
 
 }
 
 nc_call() {
     touch nc.txt
-    echo $1 | nc localhost 8080 > ./nc.txt 2>&1
+    echo $1 | nc localhost "$2" > ./nc.txt 2>&1
     request=$(cat ./listen.txt | grep "BAD REQUEST")
 
     diff nc.txt nc_expected.txt -w 
@@ -62,11 +64,26 @@ nc_call() {
 
 }
 
+touch ./listen.txt
+
+DEFAULTVALUE="../../config/deploy_config"
+
+file_name="${1:-$DEFAULTVALUE}"
+PORTVALUE="80"
+if [ file_name != "$DEFAULTVALUE" ]
+then
+    
+    PORTVALUE=$(grep -oP 'listen\s*\b(\d+)\b;' $file_name | sed 's/listen\s*\b\([0-9]\+\)\b;/\1/')
+fi
+echo "$PORTVALUE"
+echo "$file_name"
+../../build/bin/server "$file_name" > ./listen.txt 2>&1 &
+
 sleep 2
 
 listen=$(cat ./listen.txt)
 
-if [ "$listen" != "Server listening at Port:8080" ]
+if [ "$listen" != "Server listening at Port:$PORTVALUE" ]
 then
     echo "Incorrect ping"
     clean_up
@@ -75,9 +92,13 @@ fi
 
 echo "Correct ping"
 
-curl_call 
+curl_call "$PORTVALUE"
 
-nc_call "String"
+nc_call "String" "$PORTVALUE"
+
+
+
+echo "test.sh was successful"
 
 clean_up
 exit 0
