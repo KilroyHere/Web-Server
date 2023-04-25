@@ -1,11 +1,13 @@
 #include "gtest/gtest.h"
 #include "request_handler.h"
+#include "http_request.h"
 #include <fstream>
 
 class RequestHandlerTest : public ::testing::Test
 {
 protected:
   RequestHandler handler;
+  Request request_;
   std::vector<char> data;
   size_t bytes_transferred;
 };
@@ -229,4 +231,67 @@ TEST_F(RequestHandlerTest, good_request_with_response)
   response = handler.get_response();
   bool match = response == response_data;
   EXPECT_TRUE(match);
+}
+
+TEST_F(RequestHandlerTest, good_purge_request_uri)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  handler.reset();
+  bool match = request_.uri.empty();
+  EXPECT_TRUE(match);
+
+}
+
+TEST_F(RequestHandlerTest, good_purge_request_headers)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  handler.reset();
+  bool match = request_.request_headers.empty();
+  EXPECT_TRUE(match);
+
+}
+
+
+TEST_F(RequestHandlerTest, good_purge_request_body)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  handler.reset();
+  bool match = request_.request_body.empty();
+  EXPECT_TRUE(match);
+
+}
+
+
+TEST_F(RequestHandlerTest, good_purge_headers)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  handler.reset();
+  bool match = request_.headers.empty();
+  EXPECT_TRUE(match);
+
+}
+
+
+TEST_F(RequestHandlerTest, good_purge_headers_map)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  handler.reset();
+  bool match = request_.headers_map.empty();
+  EXPECT_TRUE(match);
+
 }
