@@ -147,6 +147,15 @@ TEST_F(QueryConfigTest, example_config)
   EXPECT_TRUE(result);
 }
 
+TEST_F(QueryConfigTest, empty_query)
+{
+  std::vector<std::string> query;
+  bool success = parser.Parse("config_parser_tests/example_config", &out_config);
+  std::string port;
+  bool found_port = out_config.query_config(query, port);
+  EXPECT_FALSE(found_port);
+}
+
 // relative_path_query Tests
 
 TEST_F(ConfigParserTest, nested_config)
@@ -166,4 +175,16 @@ TEST_F(ConfigParserTest, no_path_config)
   std::string port;
   bool no_path = out_config.relative_path_query(query, port, 0);
   EXPECT_FALSE(no_path);
+}
+
+// Config ToString Test
+TEST_F(ConfigParserTest, to_string)
+{
+  bool failure = parser.Parse("config_parser_tests/example_config", &out_config);
+  std::string toStringOutput;
+  std::string expectedToStringOutput = "http {\n  server {\n    listen 8080;\n  }\n}\n";
+  toStringOutput = out_config.ToString(0);
+  bool match = toStringOutput == expectedToStringOutput;
+  EXPECT_TRUE(failure);
+  EXPECT_TRUE(match);
 }
