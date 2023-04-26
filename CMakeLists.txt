@@ -71,6 +71,11 @@ gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOUR
     TESTS config_parser_test request_handler_test
 )
 
-add_test(NAME web_test
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests)
+if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
+    add_test(NAME web_test
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
+    )
+
+endif()
+
