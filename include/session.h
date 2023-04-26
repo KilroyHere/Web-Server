@@ -30,6 +30,8 @@ private:
   size_t max_buffer_size = 1024;
   std::vector<char> data_;
   RequestHandler request_handler_;
+  
+
 };
 
 #endif // SESSION_H
