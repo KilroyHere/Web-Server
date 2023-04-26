@@ -54,7 +54,7 @@ gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 )
 if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
     add_test(NAME web_test
-        COMMAND sudo ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
     )
 endif()
