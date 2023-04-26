@@ -230,6 +230,21 @@ TEST_F(RequestHandlerTest, good_request_with_response)
   handler.set_response();
   response = handler.get_response();
   bool match = response == response_data;
+  EXPECT_EQ(status, 1);
+  EXPECT_TRUE(match);
+}
+
+TEST_F(RequestHandlerTest, bad_request_with_response)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
+  extract_from_file("request_handler_tests/bad_request_response", response_data, r_bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  handler.set_response();
+  response = handler.get_response();
+  bool match = response == response_data;
+  EXPECT_EQ(status, 2);
   EXPECT_TRUE(match);
 }
 
@@ -242,7 +257,6 @@ TEST_F(RequestHandlerTest, good_purge_request_uri)
   handler.reset();
   bool match = request_.uri.empty();
   EXPECT_TRUE(match);
-
 }
 
 TEST_F(RequestHandlerTest, good_purge_request_headers)
@@ -254,9 +268,7 @@ TEST_F(RequestHandlerTest, good_purge_request_headers)
   handler.reset();
   bool match = request_.request_headers.empty();
   EXPECT_TRUE(match);
-
 }
-
 
 TEST_F(RequestHandlerTest, good_purge_request_body)
 {
@@ -267,9 +279,7 @@ TEST_F(RequestHandlerTest, good_purge_request_body)
   handler.reset();
   bool match = request_.request_body.empty();
   EXPECT_TRUE(match);
-
 }
-
 
 TEST_F(RequestHandlerTest, good_purge_headers)
 {
@@ -280,9 +290,7 @@ TEST_F(RequestHandlerTest, good_purge_headers)
   handler.reset();
   bool match = request_.headers.empty();
   EXPECT_TRUE(match);
-
 }
-
 
 TEST_F(RequestHandlerTest, good_purge_headers_map)
 {
@@ -293,5 +301,36 @@ TEST_F(RequestHandlerTest, good_purge_headers_map)
   handler.reset();
   bool match = request_.headers_map.empty();
   EXPECT_TRUE(match);
+}
 
+TEST_F(RequestHandlerTest, good_request_with_close_connection)
+{
+  extract_from_file("request_handler_tests/good_request_with_close_connection", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  int connection_status = handler.connection_close();
+  EXPECT_EQ(status, 1);
+  EXPECT_EQ(connection_status, 1);
+}
+
+TEST_F(RequestHandlerTest, good_request_with_open_connection)
+{
+  extract_from_file("request_handler_tests/good_request_with_open_connection", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  int connection_status = handler.connection_close();
+  EXPECT_EQ(status, 1);
+  EXPECT_EQ(connection_status, 0);
+}
+
+TEST_F(RequestHandlerTest, good_request_with_good_body)
+{
+  extract_from_file("request_handler_tests/good_request_with_good_body", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 1);
+}
+
+TEST_F(RequestHandlerTest, good_request_with_bad_body)
+{
+  extract_from_file("request_handler_tests/good_request_with_bad_body", data, bytes_transferred);
+  int status = handler.handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 0);
 }
