@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include "http_server.h"
 #include "config_parser.h"
+
 using boost::asio::ip::tcp;
 
 int main(int argc, char *argv[])
@@ -21,24 +22,8 @@ int main(int argc, char *argv[])
       return 1;
     }
 
-    // Using the old config_query function
-    // std::vector<std::string> query{"server", "listen"};
-    // std::string port;
-    // if (!config.query_config(query, port))
-    // {
-    //   std::cerr << "Port not found in the config file\n";
-    //   return 1;
-    // }
-
-    std::vector<std::string> query{"server","listen"};
-    std::string port;
-    if (!config.config_port_num(query, port))
-    {
-      std::cerr << "Port not found in the config file\n";
-      return 1;
-    }
     boost::asio::io_service io_service;
-    HTTPserver s(io_service, stoi(port));
+    HTTPserver s(config, io_service);
   }
   catch (std::exception &e)
   {

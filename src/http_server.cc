@@ -1,12 +1,34 @@
+#include <boost/make_shared.hpp>
 #include "http_server.h"
 
-HTTPserver::HTTPserver(boost::asio::io_service &io_service, short port)
-    : io_service_(io_service),
-      acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
+using boost::asio::ip::tcp;
+
+HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service)
+    : config_(config), io_service_(io_service), acceptor_(io_service)
 {
-  std::cerr<<"Server listening at Port:"<<port<<'\n';
-  start_accept();
-  io_service_.run();
+ 
+  std::vector<std::string> query{"server", "listen"};
+  std::string port;
+  if (!config_.config_port_num(query, port))
+  {
+    std::cerr << "Port not found in the config file\n";
+  }
+  else
+  {
+    port_ = stoi(port);
+    set_acceptor();
+    std::cerr << "Server listening at Port:" << port_ << '\n';
+    start_accept();
+    io_service_.run();
+  }
+}
+
+void HTTPserver::set_acceptor()
+{
+  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port_);
+    acceptor_.open(endpoint.protocol());
+    acceptor_.bind(endpoint);
+    acceptor_.listen();
 }
 
 void HTTPserver::start_accept()
