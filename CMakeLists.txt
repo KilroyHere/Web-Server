@@ -56,12 +56,12 @@ target_link_libraries(server Boost::system http_server_lib session_lib  request_
 # gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 
-# #Generate Unit Test Coverage Report 
-#  include(cmake/CodeCoverageReportConfig.cmake)
-#  generate_coverage_report(
-#     TARGETS config_parser_lib session_lib http_request_lib http_response_lib http_server_lib request_handler_lib request_parser_lib server
-#     TESTS config_parser_test request_handler_test session_test
-# )
+#Generate Unit Test Coverage Report 
+ include(cmake/CodeCoverageReportConfig.cmake)
+ generate_coverage_report(
+    # TARGETS config_parser_lib session_lib http_request_lib http_response_lib http_server_lib request_handler_lib request_parser_lib server
+    # TESTS config_parser_test request_handler_test session_test
+)
 
 # if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
 #     add_test(NAME web_test
