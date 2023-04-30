@@ -1,4 +1,3 @@
-#include <boost/make_shared.hpp>
 #include "http_server.h"
 
 using boost::asio::ip::tcp;
@@ -25,7 +24,7 @@ HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service)
 
 void HTTPserver::set_acceptor()
 {
-  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port_);
+    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port_);
     acceptor_.open(endpoint.protocol());
     acceptor_.bind(endpoint);
     acceptor_.listen();
@@ -33,13 +32,13 @@ void HTTPserver::set_acceptor()
 
 void HTTPserver::start_accept()
 {
-  session *new_session = new session(io_service_);
+  session *new_session = new session(io_service_,config_);
   acceptor_.async_accept(new_session->get_socket(),
                          boost::bind(&HTTPserver::handle_accept, this, new_session,
                                      boost::asio::placeholders::error));
 }
 
-void HTTPserver::handle_accept(session *new_session, const boost::system::error_code &error)
+void HTTPserver::handle_accept(session* new_session, const boost::system::error_code &error)
 {
   if (!error)
   {
@@ -47,6 +46,7 @@ void HTTPserver::handle_accept(session *new_session, const boost::system::error_
   }
   else
   {
+    // TODO: Error Log
     delete new_session;
   }
   // Starts a session and looks for new connections to be accepted

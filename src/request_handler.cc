@@ -1,7 +1,24 @@
 #include "request_handler.h"
 
-RequestHandler::RequestHandler() : state_(READING_HEADER), connection_close_(false), response_code_(200), body_read_(0)
+RequestHandler::RequestHandler(NginxConfig config) : state_(READING_HEADER), connection_close_(false), response_code_(200), body_read_(0), config_(config)
 {
+  set_path_root_map();
+}
+
+void RequestHandler::set_path_root_map()
+{
+  // Query server locations for paths.
+  std::vector<std::string> path_query{"server", "location"};
+  std::vector<std::string> paths;
+  bool root_found = config_.query_config(path_query, paths);
+  for (auto path : paths)
+  {
+    // Look for the root folder for the path
+    std::vector<std::string> root_query{"server", "location", path, "root"};
+    std::vector<std::string> roots;
+    bool root_found = config_.query_config(root_query, roots);
+    path_root_map_[path] = root_found ? roots.at(0) : std::string("");
+  }
 }
 
 int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transferred)
@@ -16,9 +33,10 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
       // LOGGING:
       std::cerr << "==================\nGOOD REQUEST!!\n==================\n";
       response_code_ = 200;
-      // TODO: Maybe make this a data member?
       int read_from = parser_.read_from_;
       request_.set_headers_map();
+      std::cerr << "\n"
+                << request_.path << "\n";
       parser_.reset();
 
       // If connection:close, end connection
@@ -77,7 +95,7 @@ int RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_t
 
   for (int i = read_from; i < bytes_transferred && body_read_ < content_length; i++)
   {
-    request_.request_body.push_back(data[i]);
+    request_.request_body.push_back(data.at(i));
     body_read_ += 1;
   }
   if (body_read_ == content_length)
@@ -92,16 +110,57 @@ int RequestHandler::read_body(std::vector<char> data, int read_from, int bytes_t
 
 void RequestHandler::set_response()
 {
-  // Echo response
+  std::unique_ptr<ResponseHandler> response_handler;
+
   if (response_code_ == 200)
   {
-    std::string response_body = request_.request_headers + request_.request_body;
-    response_.set_echo_response(200, response_body);
+    // Extract URI path components.
+    std::string uri = request_.uri;
+    // Holds the complete path seperated by "/"
+    std::vector<std::string> path_vector;
+    boost::split(path_vector, uri, boost::is_any_of("/"));
+    // The top level path
+    std::string uri_path = path_vector.size() >= 2 ? "/" + path_vector.at(1) : std::string("");
+
+    // Determine response handler based on URI path.
+    if (uri_path.empty())
+    {
+      response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
+    }
+    else if (uri_path == "/echo")
+    {
+      response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
+    }
+    else if (path_root_map_.find(uri_path) != path_root_map_.end())
+    {
+      std::cerr<<"Path Exists: "<<uri_path<<"\n";
+      std::string root_folder = path_root_map_[uri_path];
+      // TODO: If root folder not in directory, Not Found Response
+      if (!root_folder.empty())
+        std::cerr << "Root Folder: " << root_folder << "\n";
+      else
+        std::cerr << "Root Not Found"
+                  << "\n";
+      // TODO: Remove EchoResponseHandler type and set FileResponseHandler type.
+      // response_handler = std::make_unique<FileResponseHandler>(request_, response_ptr);
+      // Might also need to check root folder
+      // Look it up like location
+      // Pass it in constructor
+
+      response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
+    }
+    else
+    {
+      response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
+    }
   }
   else
   {
-    response_.set_echo_response(400, "");
+    response_handler = std::make_unique<BadRequestResponseHandler>(&request_, &response_);
   }
+
+  // Set response fields based on selected handler.
+  response_handler->set_response_fields();
 }
 
 std::vector<char> RequestHandler::get_response()

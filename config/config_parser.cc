@@ -23,7 +23,7 @@ bool NginxConfig::query_config(std::vector<std::string> query, std::string &valu
   if (query.size() == 0)
     return false;
   std::string target = *query.begin();
- 
+
   for (auto statement : statements_)
   {
     for (int i = 0; i < statement->tokens_.size(); i++)
@@ -32,7 +32,7 @@ bool NginxConfig::query_config(std::vector<std::string> query, std::string &valu
       if (token == target)
       {
         if (query.size() == 1)
-        { 
+        {
           if (i + 1 < statement->tokens_.size())
           {
             value = statement->tokens_[i + 1];
@@ -53,6 +53,77 @@ bool NginxConfig::query_config(std::vector<std::string> query, std::string &valu
     }
   }
   return false;
+}
+
+bool NginxConfig::query_config(std::vector<std::string> query, std::vector<std::string> &values)
+{
+  if (query.empty())
+    return false;
+
+  bool found = false;
+
+  // Stack stores the NginxConfig blocks to visit and the corresponding statement index
+  std::stack<std::pair<NginxConfig *, size_t>> to_visit;
+
+  // Start with the current config and statement index 0
+  to_visit.push({this, 0});
+
+  while (!to_visit.empty())
+  {
+    // Get the current config and index from the top of the stack
+    NginxConfig *current_config = to_visit.top().first;
+    size_t &index = to_visit.top().second;
+
+    // If the index is out of range, remove the current config from the stack and continue
+    if (index >= current_config->statements_.size())
+    {
+      to_visit.pop();
+      continue;
+    }
+
+    // Get the current statement
+    const auto &statement = current_config->statements_[index];
+    size_t i = 0;
+
+    // Iterate through the tokens of the statement
+    while (i < statement->tokens_.size())
+    {
+      // Check if the token matches the first element of the query
+      if (statement->tokens_[i] == query.front())
+      {
+        // If there's only one element in the query, add the subsequent tokens to the result
+        if (query.size() == 1)
+        {
+          for (size_t j = i + 1; j < statement->tokens_.size(); ++j)
+          {
+            values.push_back(statement->tokens_[j]);
+            found = true;
+          }
+        }
+        // If the statement has a child block, push it onto the stack and remove the first element of the query
+        else if (statement->child_block_)
+        {
+          query.erase(query.begin());
+          to_visit.push({statement->child_block_.get(), 0});
+        }
+      }
+      ++i;
+    }
+
+    // If the top of the stack still has the same config, increment the index
+    if (!to_visit.empty() && to_visit.top().first == current_config)
+    {
+      ++to_visit.top().second;
+
+      // If the query size is greater than 1 and we are going up a level, restore the first element of the query
+      if (query.size() > 1 && index == 0)
+      {
+        query.insert(query.begin(), query.front());
+      }
+    }
+  }
+
+  return found;
 }
 
 std::string NginxConfig::ToString(int depth)
@@ -98,66 +169,69 @@ std::string NginxConfigStatement::ToString(int depth)
   return serialized_statement;
 }
 
-bool NginxConfig::relative_path_query(std::vector<std::string> query, std::string& value, int index) 
+bool NginxConfig::relative_path_query(std::vector<std::string> query, std::string &value, int index)
 {
-  std::stack<std::pair<NginxConfig*, int>> mstack;
+  std::stack<std::pair<NginxConfig *, int>> mstack;
   for (auto statement : statements_)
   {
-    if (query.size() - 1 > index && statement->child_block_.get() != nullptr) 
+    if (query.size() - 1 > index && statement->child_block_.get() != nullptr)
     {
-      if (query[index] == statement->tokens_[0]) 
+      if (query[index] == statement->tokens_[0])
       {
-        std::pair<NginxConfig*, int> block(statement->child_block_.get(), index + 1);
+        std::pair<NginxConfig *, int> block(statement->child_block_.get(), index + 1);
         mstack.push(block);
       }
-      else 
+      else
       {
-        std::pair<NginxConfig*, int> block(statement->child_block_.get(), index);
+        std::pair<NginxConfig *, int> block(statement->child_block_.get(), index);
         mstack.push(block);
-      }      
-    } 
-    else 
+      }
+    }
+    else
     {
-      if (query.size() - 1 == index && statement->tokens_.size() > 1 && statement->tokens_[0] == query[index]) 
+      if (query.size() - 1 == index && statement->tokens_.size() > 1 && statement->tokens_[0] == query[index])
       {
         value = statement->tokens_[1].c_str();
         return true;
       }
-      else 
+      else
       {
         if (statement->child_block_.get() != nullptr)
         {
-          std::pair<NginxConfig*, int> block(statement->child_block_.get(), index);
+          std::pair<NginxConfig *, int> block(statement->child_block_.get(), index);
           mstack.push(block);
         }
       }
-
     }
   }
-  while (!mstack.empty()) {
-    std::pair<NginxConfig*, int> curr = mstack.top();
+  while (!mstack.empty())
+  {
+    std::pair<NginxConfig *, int> curr = mstack.top();
     mstack.pop();
-    if (curr.second <= query.size() && curr.first->relative_path_query( query, value, curr.second) == true) {
+    if (curr.second <= query.size() && curr.first->relative_path_query(query, value, curr.second) == true)
+    {
       return true;
     }
   }
-    
+
   return false;
 }
 
-bool NginxConfig::config_port_num(std::vector<std::string> query, std::string& value) {
+bool NginxConfig::config_port_num(std::vector<std::string> query, std::string &value)
+{
   std::string result;
-  if (!relative_path_query(query, result, 0)) {
+  if (!relative_path_query(query, result, 0))
+  {
     return false;
   }
   int port = atoi(result.c_str());
-  //valid port number
-  if (0 < port && 65536 > port) 
+  // valid port number
+  if (0 < port && 65536 > port)
   {
     value = result.c_str();
     return true;
   }
-  //invalid port number
+  // invalid port number
   else
   {
     return false;

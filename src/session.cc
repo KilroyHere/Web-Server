@@ -1,14 +1,21 @@
 #include "session.h"
 
-session::session(boost::asio::io_service &io_service)
-    : socket_(io_service)
+session::session(boost::asio::io_service &io_service, NginxConfig config)
+    : socket_(io_service), config_(config), request_handler_(RequestHandler(config))
 {
-  data_.resize(max_buffer_size);
+   data_.resize(max_buffer_size);
 }
+
+// session::session(boost::asio::io_service &io_service)
+//     : socket_(io_service)
+// {
+//   data_.resize(max_buffer_size);
+// }
 
 session::~session()
 {
   socket_.close();
+  std::cerr << "Session Destructor";
 }
 
 tcp::socket &session::get_socket()
@@ -47,8 +54,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
       // Close the connection if needed
       if (request_handler_.connection_close())
       {
-        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-        delete this;
+        socket_.close();
         return;
       }
     }
@@ -63,8 +69,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     {
       std::cerr << error << ": Error reading from TCP socket";
     }
-    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-    delete this;
+    socket_.close();
     return;
   }
 }
@@ -82,7 +87,8 @@ void session::handle_write(const boost::system::error_code &error)
   }
   else
   {
-    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-    delete this;
+    socket_.close();
+    return;
   }
 }
+

@@ -24,7 +24,9 @@ public:
 class NginxConfig
 {
 public:
+  // TODO: Obselete function signature. Remove eventually. 
   bool query_config(std::vector<std::string> query, std::string& value);
+  bool query_config(std::vector<std::string> query, std::vector<std::string> &values);
   std::string ToString(int depth = 0);
   bool relative_path_query(std::vector<std::string> query, std::string& value, int index);
   bool config_port_num(std::vector<std::string> query, std::string& value);

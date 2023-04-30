@@ -16,7 +16,7 @@ public:
 
 private:
   void start_accept();
-  void handle_accept(session *new_session, const boost::system::error_code &error);
+  void handle_accept(session* new_session, const boost::system::error_code &error);
   void set_acceptor();
 
 
