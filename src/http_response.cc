@@ -68,6 +68,20 @@ void Response::set_echo_response(int status, const std::string response_body)
   headers_[1].value = "text/plain";
 }
 
+//TODO
+//status = 200
+//response body = content of file 
+//content type = from MIME map
+void Response::set_file_response(int status, const std::string file, std::string file_type)
+{
+  status_code_ = status; 
+  
+  //pass in file contents
+
+  //map mime type 
+
+}
+
 void Response::purge_response()
 {
   content_.clear();

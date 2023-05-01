@@ -35,6 +35,9 @@ public:
     // Clear all response fields
     void purge_response();
 
+    //handle static file inputs
+    void set_file_response(int status, const std::string file, std::string file_type);
+
 private:
     // The headers to be included in the response.
     std::vector<response_header> headers_;

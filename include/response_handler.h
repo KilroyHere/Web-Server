@@ -3,8 +3,13 @@
 
 #include <iostream>
 #include <vector>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "http_request.h"
 #include "http_response.h"
+#include "mime_types.h"
+
+
 
 class ResponseHandler
 {
@@ -39,6 +44,23 @@ private:
   Request* request_;
 };
 */
+
+
+class FileResponseHandler : public ResponseHandler
+{
+  public: 
+    FileResponseHandler(Request* request, Response* response);
+    FileResponseHandler(Request* request, Response* response, std::string filepath, std::string root);
+    
+    void set_response_fields() override;
+    
+  
+  private: 
+    Response* response_;
+    Request* request_;
+    std::string path;
+    std::string root_;
+};
 
 class BadRequestResponseHandler : public ResponseHandler
 {

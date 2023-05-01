@@ -17,7 +17,13 @@ void RequestHandler::set_path_root_map()
     std::vector<std::string> root_query{"server", "location", path, "root"};
     std::vector<std::string> roots;
     bool root_found = config_.query_config(root_query, roots);
-    path_root_map_[path] = root_found ? roots.at(0) : std::string("");
+    
+    //only add root to path if root is found
+    if(root_found)
+    {
+      path_root_map_[path] = roots.at(0);
+    }
+    
   }
 }
 
@@ -112,6 +118,7 @@ void RequestHandler::set_response()
 {
   std::unique_ptr<ResponseHandler> response_handler;
 
+
   if (response_code_ == 200)
   {
     // Extract URI path components.
@@ -131,23 +138,39 @@ void RequestHandler::set_response()
     {
       response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
     }
-    else if (path_root_map_.find(uri_path) != path_root_map_.end())
+    else if (path_root_map_.find(uri_path) != path_root_map_.end() && path_vector.size() == 3)
     {
       std::cerr<<"Path Exists: "<<uri_path<<"\n";
       std::string root_folder = path_root_map_[uri_path];
-      // TODO: If root folder not in directory, Not Found Response
-      if (!root_folder.empty())
-        std::cerr << "Root Folder: " << root_folder << "\n";
-      else
-        std::cerr << "Root Not Found"
-                  << "\n";
-      // TODO: Remove EchoResponseHandler type and set FileResponseHandler type.
-      // response_handler = std::make_unique<FileResponseHandler>(request_, response_ptr);
-      // Might also need to check root folder
-      // Look it up like location
-      // Pass it in constructor
+      
+      //temporary sanity checks WILL REFACTOR IN THE NEXT CR 
+      
+      //check filepath
+      for(auto token:path_vector)
+      {
+        std::cout<<token<<"\n";
+      }
+      std::string filepath = ".."+root_folder + "/" + path_vector.at(2);
+      std :: cout << "filepath: "<<filepath<<"\n";
 
-      response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
+      // Check if file exists using relative file format server/static/folder/filename
+
+      boost::filesystem::path boost_path(filepath);
+      if (!boost::filesystem::exists(filepath) || !boost::filesystem::is_regular_file(filepath)) 
+      {
+           std::cerr<<"File does not exist in this directory: "<< ".."<<root_folder<<"\n";
+           response_code_ = 404;
+           connection_close_ = true;
+           return;
+      }
+
+
+
+       response_handler = std::make_unique<FileResponseHandler>(&request_, &response_, filepath, root_folder);
+
+
+
+      //response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
     }
     else
     {

@@ -4,11 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <sys/stat.h>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "request_parser.h"
 #include "http_request.h"
 #include "http_response.h"
 #include "config_parser.h"
 #include "response_handler.h"
+#include "mime_types.h"
 
 class RequestHandler
 {
