@@ -25,7 +25,7 @@ add_subdirectory(/usr/src/googletest googletest)
 # Enable Boost
 # Use static libraries so binaries can be deployed without a full boost install
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.50 REQUIRED COMPONENTS system)
+find_package(Boost 1.50 REQUIRED COMPONENTS system log_setup log)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
 include_directories(include)
@@ -39,7 +39,7 @@ add_library(response_handler_lib  src/response_handler.cc)
 add_library(config_parser_lib  config/config_parser.cc)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server Boost::system http_server_lib session_lib  request_handler_lib response_handler_lib request_parser_lib http_response_lib http_request_lib  config_parser_lib )
+target_link_libraries(server Boost::system Boost::log_setup Boost::log http_server_lib session_lib  request_handler_lib response_handler_lib request_parser_lib http_response_lib http_request_lib  config_parser_lib )
 
 # TODO: Commented out the tests as they need to be updates to match the updated constructors.
 # add_executable(config_parser_test tests/config_parser_test.cc)
