@@ -140,7 +140,7 @@ void RequestHandler::set_response()
     }
     else if (path_root_map_.find(uri_path) != path_root_map_.end() && path_vector.size() == 3)
     {
-      std::cerr<<"Path Exists: "<<uri_path<<"\n";
+      std::cerr << "Path Exists: " << uri_path << "\n";
       std::string root_folder = path_root_map_[uri_path];
       
       //temporary sanity checks WILL REFACTOR IN THE NEXT CR 
