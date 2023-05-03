@@ -40,8 +40,7 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
       response_code_ = 200;
       int read_from = parser_.read_from_;
       request_.set_headers_map();
-      std::cerr << "\n"
-                << request_.path << "\n";
+      BOOST_LOG_TRIVIAL(info) << "Request path: " << request_.path;
       parser_.reset();
 
       // If connection:close, end connection
