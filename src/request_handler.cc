@@ -139,14 +139,16 @@ void RequestHandler::set_response()
     }
     else if (path_root_map_.find(uri_path) != path_root_map_.end() && path_vector.size() == 3)
     {
-      std::cerr << "Path Exists: " << uri_path << "\n";
+      BOOST_LOG_TRIVIAL(info) << "Path Exists: " << uri_path;
       std::string root_folder = path_root_map_[uri_path];
 
       // check filepath
+      std::string log_message = "";
       for (auto token : path_vector)
       {
-        std::cout << token << "\n";
+        log_message += token + '\n';
       }
+      BOOST_LOG_TRIVIAL(info) << log_message;
 
       std::string filepath = ".." + root_folder + "/" + path_vector.at(2);
 
@@ -155,8 +157,8 @@ void RequestHandler::set_response()
       boost::filesystem::path boost_path(filepath);
       if (!boost::filesystem::exists(filepath) || !boost::filesystem::is_regular_file(filepath))
       {
-        std::cerr << "File does not exist in this directory: "
-                  << ".." << root_folder << "\n";
+        BOOST_LOG_TRIVIAL(info) << "File does not exist in this directory: "
+                                << ".." << root_folder;
         connection_close_ = true;
         response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
       }

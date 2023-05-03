@@ -60,7 +60,7 @@ std::string Response::status_to_string(int status)
   else
   {
     // Error
-    std::cerr << "Wrong status code";
+    BOOST_LOG_TRIVIAL(error) << "Wrong status code";
     return status_map_[400];
   }
 }
@@ -83,21 +83,18 @@ void Response::set_file_response(int status, const std::string filepath)
   // read file contents
   std::ifstream file(filepath.c_str(), std::ios::in | std::ios::binary);
 
-  std::cerr << "Reading the file "
-            << "\n";
+  BOOST_LOG_TRIVIAL(info) << "Reading the file.";
   std::string body;
 
   char c;
   while (file.get(c))
     body += c;
 
-  std::cerr << "Got file contents"
-            << "\n";
+  BOOST_LOG_TRIVIAL(info) << "Got file contents.";
 
   file.close();
 
-  std::cerr << "File closed"
-            << "\n";
+  BOOST_LOG_TRIVIAL(info) << "File closed.";
 
   // map mime type
 

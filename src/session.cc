@@ -15,7 +15,7 @@ session::session(boost::asio::io_service &io_service, NginxConfig config)
 session::~session()
 {
   socket_.close();
-  std::cerr << "Session Destructor";
+  BOOST_LOG_TRIVIAL(info) << "Run session destructor";
 }
 
 tcp::socket &session::get_socket()
@@ -70,7 +70,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
     if ((boost::asio::error::eof != error) &&
         (boost::asio::error::connection_reset != error))
     {
-      std::cerr << error << ": Error reading from TCP socket";
+      BOOST_LOG_TRIVIAL(severity_level::error) << error << ": Error reading from TCP socket";
     }
     socket_.close();
     return;

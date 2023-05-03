@@ -5,6 +5,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/log/trivial.hpp>
 #include "http_request.h"
 #include "http_response.h"
 #include "mime_types.h"
