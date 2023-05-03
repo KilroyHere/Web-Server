@@ -37,6 +37,8 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
   if (!error)
   {
     // LOGGING:
+    log_message += "Client: " + boost::lexical_cast<std::string>(socket_.remote_endpoint());
+    log_message += "\n===========================================\n";
     for (int i = 0; i < bytes_transferred; i++)
     {
       log_message += data_[i];

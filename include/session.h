@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <iostream>
 #include <boost/log/trivial.hpp>
+#include <boost/lexical_cast.hpp>
 #include "request_handler.h"
 #include "config_parser.h"
 
