@@ -29,30 +29,31 @@ std::vector<char> Response::to_buffer()
   }
   response += crlf;
   // LOGGING:
-  std::cerr<<"=====RESPONSE=====\n";
+  std::string log_message = "==================RESPONSE==================\n";
+
   for (auto c : response)
   {
     // LOGGING:
-    std::cerr << c;
-    
+    log_message += c;
+    buffer.push_back(c);
   }
   // LOGGING:
-
-  std::cerr<<"\n==================\n";
+  log_message += "===============END-OF-RESPONSE==============";
+  BOOST_LOG_TRIVIAL(info) << log_message;
 
   response += content_;
   for (auto c : response)
-  {    
-    
+  {
+
     buffer.push_back(c);
   }
-  
+
   return buffer;
 }
 
 std::string Response::status_to_string(int status)
 {
-  if(status_map_.find(status) != status_map_.end())
+  if (status_map_.find(status) != status_map_.end())
   {
     return status_map_[status];
   }
@@ -76,42 +77,44 @@ void Response::set_echo_response(int status, const std::string response_body)
   headers_[1].value = "text/plain";
 }
 
-
-void Response::set_file_response(int status, const std::string filepath) 
+void Response::set_file_response(int status, const std::string filepath)
 {
-  
-  //read file contents 
+
+  // read file contents
   std::ifstream file(filepath.c_str(), std::ios::in | std::ios::binary);
 
-  std::cerr<<"Reading the file "<<"\n";
-  std::string body; 
-  
-  char c;
-  while (file.get(c)) body += c;
+  std::cerr << "Reading the file "
+            << "\n";
+  std::string body;
 
-  std::cerr<< "Got file contents"<<"\n";
-  
+  char c;
+  while (file.get(c))
+    body += c;
+
+  std::cerr << "Got file contents"
+            << "\n";
+
   file.close();
 
-  std::cerr<<"File closed"<<"\n";
+  std::cerr << "File closed"
+            << "\n";
 
-  //map mime type 
+  // map mime type
 
-  //get extension of the file to map to mime 
+  // get extension of the file to map to mime
   std::string extension;
   size_t cursor = filepath.find_last_of(".");
   if (cursor != std::string::npos)
     extension = filepath.substr(cursor + 1);
-  
-  status_code_ = status; 
-  content_ = body; 
-  
+
+  status_code_ = status;
+  content_ = body;
+
   headers_.resize(2);
   headers_[0].name = "Content-Length";
   headers_[0].value = std::to_string(content_.length());
   headers_[1].name = "Content-Type";
   headers_[1].value = extension_to_type(extension);
-
 }
 
 void Response::purge_response()

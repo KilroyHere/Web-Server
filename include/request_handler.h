@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/log/trivial.hpp>
 #include "request_parser.h"
 #include "http_request.h"
 #include "http_response.h"

@@ -17,8 +17,8 @@
 #include <iostream>
 #include <fstream>
 #include <boost/asio.hpp>
+#include <boost/log/trivial.hpp>
 #include "mime_types.h"
-
 
 struct response_header
 {
@@ -32,12 +32,12 @@ class Response
 public:
     // Sets the echo response
     void set_echo_response(int status, const std::string response_body);
-    // Converts the response to vector<char> 
+    // Converts the response to vector<char>
     std::vector<char> to_buffer();
     // Clear all response fields
     void purge_response();
 
-    //handle static file inputs
+    // handle static file inputs
     void set_file_response(int status, const std::string file);
 
 private:

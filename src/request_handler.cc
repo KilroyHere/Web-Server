@@ -17,13 +17,12 @@ void RequestHandler::set_path_root_map()
     std::vector<std::string> root_query{"server", "location", path, "root"};
     std::vector<std::string> roots;
     bool root_found = config_.query_config(root_query, roots);
-    
-    //only add root to path if root is found
-    if(root_found)
+
+    // only add root to path if root is found
+    if (root_found)
     {
       path_root_map_[path] = roots.at(0);
     }
-    
   }
 }
 
@@ -37,7 +36,7 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
     if (result == RequestParser::good)
     {
       // LOGGING:
-      std::cerr << "==================\nGOOD REQUEST!!\n==================\n";
+      BOOST_LOG_TRIVIAL(info) << "===============GOOD REQUEST!!===============";
       response_code_ = 200;
       int read_from = parser_.read_from_;
       request_.set_headers_map();
@@ -67,7 +66,7 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
     else if (result == RequestParser::bad)
     {
       // LOGGING:
-      std::cerr << "==================\nBAD REQUEST!!\n==================\n";
+      BOOST_LOG_TRIVIAL(info) << "===============BAD REQUEST!!===============";
       response_code_ = 400;
       connection_close_ = true;
       return 2;
@@ -118,8 +117,6 @@ void RequestHandler::set_response()
 {
   std::unique_ptr<ResponseHandler> response_handler;
 
-
-
   if (response_code_ == 200)
   {
     // Extract URI path components.
@@ -144,36 +141,29 @@ void RequestHandler::set_response()
     {
       std::cerr << "Path Exists: " << uri_path << "\n";
       std::string root_folder = path_root_map_[uri_path];
-      
-      
-      
-      //check filepath
-      for(auto token:path_vector)
+
+      // check filepath
+      for (auto token : path_vector)
       {
-        std::cout<<token<<"\n";
+        std::cout << token << "\n";
       }
-      
-      std::string filepath = ".."+root_folder + "/" + path_vector.at(2);
-      
+
+      std::string filepath = ".." + root_folder + "/" + path_vector.at(2);
 
       // Check if file exists using relative file format server/static/folder/filename
 
       boost::filesystem::path boost_path(filepath);
-      if (!boost::filesystem::exists(filepath) || !boost::filesystem::is_regular_file(filepath)) 
+      if (!boost::filesystem::exists(filepath) || !boost::filesystem::is_regular_file(filepath))
       {
-           std::cerr<<"File does not exist in this directory: "<< ".."<<root_folder<<"\n";           
-           connection_close_ = true;
-           response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);           
+        std::cerr << "File does not exist in this directory: "
+                  << ".." << root_folder << "\n";
+        connection_close_ = true;
+        response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
       }
       else
       {
         response_handler = std::make_unique<FileResponseHandler>(&request_, &response_, filepath);
       }
-
-
-
-       
-      
     }
     else
     {

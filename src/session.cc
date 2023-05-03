@@ -3,7 +3,7 @@
 session::session(boost::asio::io_service &io_service, NginxConfig config)
     : socket_(io_service), config_(config), request_handler_(RequestHandler(config))
 {
-   data_.resize(max_buffer_size);
+  data_.resize(max_buffer_size);
 }
 
 // session::session(boost::asio::io_service &io_service)
@@ -33,13 +33,16 @@ void session::async_read()
 
 void session::handle_read(const boost::system::error_code &error, size_t bytes_transferred)
 {
+  std::string log_message = "==================REQUEST===================\n";
   if (!error)
   {
     // LOGGING:
     for (int i = 0; i < bytes_transferred; i++)
     {
-      std::cerr << data_[i];
+      log_message += data_[i];
     }
+    log_message += "\n===============END-OF-REQUEST===============";
+    BOOST_LOG_TRIVIAL(info) << log_message;
     // Handle the request
     int request_handled = request_handler_.handle_request(data_, bytes_transferred);
     // If request is handled
@@ -91,4 +94,3 @@ void session::handle_write(const boost::system::error_code &error)
     return;
   }
 }
-

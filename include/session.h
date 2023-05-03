@@ -4,6 +4,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <iostream>
+#include <boost/log/trivial.hpp>
 #include "request_handler.h"
 #include "config_parser.h"
 
@@ -28,14 +29,12 @@ private:
   void handle_read(const boost::system::error_code &error, size_t bytes_transferred);
   // Callback for async_write
   void handle_write(const boost::system::error_code &error);
-  
+
   tcp::socket socket_;
   size_t max_buffer_size = 1024;
   std::vector<char> data_;
   RequestHandler request_handler_;
   NginxConfig config_;
-  
-
 };
 
 #endif // SESSION_H
