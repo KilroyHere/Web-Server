@@ -119,6 +119,7 @@ void RequestHandler::set_response()
   std::unique_ptr<ResponseHandler> response_handler;
 
 
+
   if (response_code_ == 200)
   {
     // Extract URI path components.
@@ -132,6 +133,7 @@ void RequestHandler::set_response()
     // Determine response handler based on URI path.
     if (uri_path.empty())
     {
+      connection_close_ = true;
       response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
     }
     else if (uri_path == "/echo")
@@ -143,42 +145,45 @@ void RequestHandler::set_response()
       std::cerr << "Path Exists: " << uri_path << "\n";
       std::string root_folder = path_root_map_[uri_path];
       
-      //temporary sanity checks WILL REFACTOR IN THE NEXT CR 
+      
       
       //check filepath
       for(auto token:path_vector)
       {
         std::cout<<token<<"\n";
       }
+      
       std::string filepath = ".."+root_folder + "/" + path_vector.at(2);
-      std :: cout << "filepath: "<<filepath<<"\n";
+      
 
       // Check if file exists using relative file format server/static/folder/filename
 
       boost::filesystem::path boost_path(filepath);
       if (!boost::filesystem::exists(filepath) || !boost::filesystem::is_regular_file(filepath)) 
       {
-           std::cerr<<"File does not exist in this directory: "<< ".."<<root_folder<<"\n";
-           response_code_ = 404;
+           std::cerr<<"File does not exist in this directory: "<< ".."<<root_folder<<"\n";           
            connection_close_ = true;
-           return;
+           response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);           
+      }
+      else
+      {
+        response_handler = std::make_unique<FileResponseHandler>(&request_, &response_, filepath);
       }
 
 
 
-       response_handler = std::make_unique<FileResponseHandler>(&request_, &response_, filepath, root_folder);
-
-
-
-      //response_handler = std::make_unique<EchoResponseHandler>(&request_, &response_);
+       
+      
     }
     else
     {
+      connection_close_ = true;
       response_handler = std::make_unique<NotFoundResponseHandler>(&request_, &response_);
     }
   }
   else
   {
+    connection_close_ = true;
     response_handler = std::make_unique<BadRequestResponseHandler>(&request_, &response_);
   }
 

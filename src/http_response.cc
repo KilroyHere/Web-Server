@@ -28,17 +28,25 @@ std::vector<char> Response::to_buffer()
     response += crlf;
   }
   response += crlf;
-  response += content_;
   // LOGGING:
-  std::cerr<<"=====RESPONSE=====\n";;
+  std::cerr<<"=====RESPONSE=====\n";
   for (auto c : response)
   {
     // LOGGING:
     std::cerr << c;
-    buffer.push_back(c);
+    
   }
   // LOGGING:
+
   std::cerr<<"\n==================\n";
+
+  response += content_;
+  for (auto c : response)
+  {    
+    
+    buffer.push_back(c);
+  }
+  
   return buffer;
 }
 
@@ -68,17 +76,41 @@ void Response::set_echo_response(int status, const std::string response_body)
   headers_[1].value = "text/plain";
 }
 
-//TODO
-//status = 200
-//response body = content of file 
-//content type = from MIME map
-void Response::set_file_response(int status, const std::string file, std::string file_type)
+
+void Response::set_file_response(int status, const std::string filepath) 
 {
-  status_code_ = status; 
   
-  //pass in file contents
+  //read file contents 
+  std::ifstream file(filepath.c_str(), std::ios::in | std::ios::binary);
+
+  std::cerr<<"Reading the file "<<"\n";
+  std::string body; 
+  
+  char c;
+  while (file.get(c)) body += c;
+
+  std::cerr<< "Got file contents"<<"\n";
+  
+  file.close();
+
+  std::cerr<<"File closed"<<"\n";
 
   //map mime type 
+
+  //get extension of the file to map to mime 
+  std::string extension;
+  size_t cursor = filepath.find_last_of(".");
+  if (cursor != std::string::npos)
+    extension = filepath.substr(cursor + 1);
+  
+  status_code_ = status; 
+  content_ = body; 
+  
+  headers_.resize(2);
+  headers_[0].name = "Content-Length";
+  headers_[0].value = std::to_string(content_.length());
+  headers_[1].name = "Content-Type";
+  headers_[1].value = extension_to_type(extension);
 
 }
 

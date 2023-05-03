@@ -15,7 +15,9 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <boost/asio.hpp>
+#include "mime_types.h"
 
 
 struct response_header
@@ -36,7 +38,7 @@ public:
     void purge_response();
 
     //handle static file inputs
-    void set_file_response(int status, const std::string file, std::string file_type);
+    void set_file_response(int status, const std::string file);
 
 private:
     // The headers to be included in the response.

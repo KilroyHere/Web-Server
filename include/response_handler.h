@@ -10,7 +10,6 @@
 #include "mime_types.h"
 
 
-
 class ResponseHandler
 {
 public:
@@ -30,27 +29,13 @@ private:
   Request* request_;
 };
 
-/*
-TODO: Complete the set_response_fields function and also the constructor. Maybe modify it to take in path and root
-Look at request_handler.cc:135 for reference
-class FileResponseHandler : public ResponseHandler
-{
-public:
-  FileResponseHandler(Request* request, Response* response);
-  void set_response_fields() override;
-
-private:
-  Response* response_;
-  Request* request_;
-};
-*/
 
 
 class FileResponseHandler : public ResponseHandler
 {
   public: 
     FileResponseHandler(Request* request, Response* response);
-    FileResponseHandler(Request* request, Response* response, std::string filepath, std::string root);
+    FileResponseHandler(Request* request, Response* response, std::string filepath);
     
     void set_response_fields() override;
     
@@ -58,8 +43,7 @@ class FileResponseHandler : public ResponseHandler
   private: 
     Response* response_;
     Request* request_;
-    std::string path;
-    std::string root_;
+    std::string path_;
 };
 
 class BadRequestResponseHandler : public ResponseHandler

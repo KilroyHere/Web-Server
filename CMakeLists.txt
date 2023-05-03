@@ -38,10 +38,13 @@ add_library(request_handler_lib  src/request_handler.cc)
 add_library(response_handler_lib  src/response_handler.cc)
 add_library(config_parser_lib  config/config_parser.cc)
 add_library(logging_lib  src/logging.cc)
+add_library(mime_types_lib src/mime_types.cc)
+
 target_link_libraries(logging_lib  Boost::log_setup Boost::log)
 
 add_executable(server src/server_main.cc)
-target_link_libraries(server Boost::system http_server_lib session_lib request_handler_lib response_handler_lib request_parser_lib http_response_lib http_request_lib config_parser_lib logging_lib)
+target_link_libraries(server Boost::system http_server_lib session_lib request_handler_lib response_handler_lib request_parser_lib http_response_lib http_request_lib config_parser_lib logging_lib mime_types_lib)
+
 
 # TODO: Commented out the tests as they need to be updates to match the updated constructors.
 # add_executable(config_parser_test tests/config_parser_test.cc)

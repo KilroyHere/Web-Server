@@ -5,15 +5,12 @@ EchoResponseHandler::EchoResponseHandler(Request* request, Response* response)
   : request_(request), response_(response)
 {}
 
-// TODO:
-// FileResponseHandler::FileResponseHandler(const Request request, std::shared_ptr<Response> response)
-//   : request_(request), response_(response)
-// {}
 
-FileResponseHandler::FileResponseHandler(Request* request, Response* response, std::string filepath, std::string root) 
-    : request_(request), response_(response), path(filepath), root_(root)
+FileResponseHandler::FileResponseHandler(Request* request, Response* response, std::string filepath) 
+    : request_(request), response_(response), path_(filepath)
 {
-    
+  //check filepath  
+  std::cout<<"filepath: "<<filepath<<"\n";    
 }
 
 
@@ -35,11 +32,10 @@ void EchoResponseHandler::set_response_fields()
     response_->set_echo_response(200, response_body);
   }
 
-// TODO: set_response_fields() function
+
 void FileResponseHandler::set_response_fields()
-{
-    std::string response_body = "";
-    response_->set_echo_response(200, response_body);
+{    
+    response_->set_file_response(200, path_);
 }
 
 
