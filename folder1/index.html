@@ -1,195 +1,58 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>GCC Code Coverage Report</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="index.css">
+    <title>World Clock</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      
+      h1 {
+        margin-top: 50px;
+        margin-bottom: 30px;
+        font-size: 36px;
+      }
+      
+      p {
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      
+      span {
+        font-weight: bold;
+        font-size: 32px;
+      }
+    </style>
+    <script>
+      function updateTime() {
+        // Get the current time
+        const now = new Date();
+
+        // Set the timezone offsets for the cities
+        const newYorkOffset = -4;
+        const londonOffset = 1;
+        const tokyoOffset = 9;
+
+        // Calculate the time in each city based on the current time and timezone offset
+        const newYorkTime = new Date(now.getTime() + (newYorkOffset * 60 * 60 * 1000));
+        const londonTime = new Date(now.getTime() + (londonOffset * 60 * 60 * 1000));
+        const tokyoTime = new Date(now.getTime() + (tokyoOffset * 60 * 60 * 1000));
+
+        // Display the time in each city
+        document.getElementById("new-york-time").textContent = newYorkTime.toLocaleTimeString();
+        document.getElementById("london-time").textContent = londonTime.toLocaleTimeString();
+        document.getElementById("tokyo-time").textContent = tokyoTime.toLocaleTimeString();
+      }
+
+      // Update the time every second
+      setInterval(updateTime, 1000);
+    </script>
   </head>
-
   <body>
-    <h1>GCC Code Coverage Report</h1>
-
-    <hr/>
-
-    <div class="summary">
-<div>
-  <table class="legend">
-    <tr>
-      <th scope="row">Directory:</th>
-      <td>./</td>
-    </tr>
-    <tr>
-      <th scope="row">Date:</th>
-      <td>2023-04-26 02:18:15</td>
-    </tr>
-    <tr>
-      <th scope="row">Legend:</th>
-      <td class="legend">
-        <span class="coverage-low">low: &gt;= 0%</span>
-        <span class="coverage-medium">medium: &gt;= 75.0%</span>
-        <span class="coverage-high">high: &gt;= 90.0%</span>
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div>
-  <table class="coverage">
-    <tr>
-      <th></th>
-      <th scope="col">Exec</th>
-      <th scope="col">Total</th>
-      <th scope="col">Coverage</th>
-    </tr>
-    <tr>
-      <th scope="row">Lines:</th>
-      <td>429</td>
-      <td>562</td>
-      <td class="coverage-medium">76.3%</td>
-    </tr>
-    <tr>
-      <th scope="row">Branches:</th>
-      <td>332</td>
-      <td>628</td>
-      <td class="coverage-low">52.9%</td>
-    </tr>
-  </table>
-</div>
-    </div>
-
-    <hr/>
-
-<table class="file-list">
-  <col/>
-  <colgroup span="3"/>
-  <colgroup span="2"/>
-
-  <tr>
-    <th scope="col">File</th>
-    <th scope="colgroup" colspan=3>Lines</th>
-    <th scope="colgroup" colspan=2>Branches</th>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.config_parser.cc.0603ed735dcd094ccf7df6cc1d982339.html">config/config_parser.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-medium" min="0" max="100" value="81.0" title="81.0%">81.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-medium">81.0%</td>
-    <td class="CoverValue line-coverage coverage-medium">183 / 226</td>
-    <td class="CoverValue branch-coverage coverage-low">58.8%</td>
-    <td class="CoverValue branch-coverage coverage-low">171 / 291</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.http_request.cc.ed8b69a17b8f3c04d8bca8ebdc472cbc.html">src/http_request.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="100.0" title="100.0%">100.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">100.0%</td>
-    <td class="CoverValue line-coverage coverage-high">14 / 14</td>
-    <td class="CoverValue branch-coverage coverage-low">60.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">6 / 10</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.http_response.cc.7e27b6556ef44a7640e3636d24e62ce5.html">src/http_response.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="94.6" title="94.6%">94.6</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">94.6%</td>
-    <td class="CoverValue line-coverage coverage-high">35 / 37</td>
-    <td class="CoverValue branch-coverage coverage-low">50.0%</td>
-    <td class="CoverValue branch-coverage coverage-low">19 / 38</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.http_server.cc.e7468d8a750feb99e69d86ab323b85ba.html">src/http_server.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-none" min="0" max="100" value="0.0" title="0.0%">0.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-none">0.0%</td>
-    <td class="CoverValue line-coverage coverage-none">0 / 15</td>
-    <td class="CoverValue branch-coverage coverage-none">0.0%</td>
-    <td class="CoverValue branch-coverage coverage-none">0 / 22</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_handler.cc.d4505ac53ca5baa417bbefa29e34e864.html">src/request_handler.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-low" min="0" max="100" value="66.7" title="66.7%">66.7</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-low">66.7%</td>
-    <td class="CoverValue line-coverage coverage-low">34 / 51</td>
-    <td class="CoverValue branch-coverage coverage-low">30.4%</td>
-    <td class="CoverValue branch-coverage coverage-low">17 / 56</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.request_parser.cc.45123ad8d7efdcc613c2679afe26b1c1.html">src/request_parser.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-high" min="0" max="100" value="98.8" title="98.8%">98.8</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-high">98.8%</td>
-    <td class="CoverValue line-coverage coverage-high">163 / 165</td>
-    <td class="CoverValue branch-coverage coverage-medium">88.1%</td>
-    <td class="CoverValue branch-coverage coverage-medium">119 / 135</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.server_main.cc.8c2f7fb6553220e22640ffda0e6cb46e.html">src/server_main.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-none" min="0" max="100" value="0.0" title="0.0%">0.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-none">0.0%</td>
-    <td class="CoverValue line-coverage coverage-none">0 / 17</td>
-    <td class="CoverValue branch-coverage coverage-none">0.0%</td>
-    <td class="CoverValue branch-coverage coverage-none">0 / 42</td>
-  </tr>
-
-
-  <tr>
-    <th scope="row">
-      <a href="index.session.cc.a39713a7caf4db9d7b5a9a5e778339b6.html">src/session.cc</a>
-    </th>
-    <td>
-      <meter class="coverage-none" min="0" max="100" value="0.0" title="0.0%">0.0</meter>
-    </td>
-    <td class="CoverValue line-coverage coverage-none">0.0%</td>
-    <td class="CoverValue line-coverage coverage-none">0 / 37</td>
-    <td class="CoverValue branch-coverage coverage-none">0.0%</td>
-    <td class="CoverValue branch-coverage coverage-none">0 / 34</td>
-  </tr>
-
-</table>
-
-    <hr/>
-
-    <footer>
-      Generated by: <a href="http://gcovr.com">GCOVR (Version 5.0)</a>
-    </footer>
+    <h1>World Clock</h1>
+    <p>New York: <span id="new-york-time"></span></p>
+    <p>London: <span id="london-time"></span></p>
+    <p>Tokyo: <span id="tokyo-time"></span></p>
   </body>
 </html>
