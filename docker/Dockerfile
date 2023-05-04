@@ -11,13 +11,13 @@ RUN cmake ..
 RUN make
 RUN ctest --output-on_failure
 
-
 ### Deploy container ###
 # Define deploy stage
 FROM ubuntu:jammy as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/config/deploy_config .
+COPY --from=builder /usr/src/project/static .
 
 EXPOSE 8080 80
 

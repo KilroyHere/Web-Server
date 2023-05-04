@@ -40,7 +40,6 @@ int RequestHandler::handle_request(std::vector<char> data, size_t bytes_transfer
       response_code_ = 200;
       int read_from = parser_.read_from_;
       request_.set_headers_map();
-      BOOST_LOG_TRIVIAL(info) << "Request path: " << request_.path;
       parser_.reset();
 
       // If connection:close, end connection
@@ -141,15 +140,8 @@ void RequestHandler::set_response()
       BOOST_LOG_TRIVIAL(info) << "Path Exists: " << uri_path;
       std::string root_folder = path_root_map_[uri_path];
 
-      // check filepath
-      std::string log_message = "";
-      for (auto token : path_vector)
-      {
-        log_message += token + '\n';
-      }
-      BOOST_LOG_TRIVIAL(info) << log_message;
-
-      std::string filepath = ".." + root_folder + "/" + path_vector.at(2);
+      // Setting filepath to ../<folder>/<file_name>
+      std::string filepath = "../static" + root_folder + "/" + path_vector.at(2);
 
       // Check if file exists using relative file format server/static/folder/filename
 

@@ -35,7 +35,6 @@ std::vector<char> Response::to_buffer()
   {
     // LOGGING:
     log_message += c;
-    buffer.push_back(c);
   }
   // LOGGING:
   log_message += "===============END-OF-RESPONSE==============";
@@ -44,10 +43,8 @@ std::vector<char> Response::to_buffer()
   response += content_;
   for (auto c : response)
   {
-
     buffer.push_back(c);
   }
-
   return buffer;
 }
 
@@ -84,7 +81,7 @@ void Response::set_file_response(int status, const std::string filepath)
   std::ifstream file(filepath.c_str(), std::ios::in | std::ios::binary);
 
   BOOST_LOG_TRIVIAL(info) << "Reading the file.";
-  std::string body;
+  std::string body = "";
 
   char c;
   while (file.get(c))
