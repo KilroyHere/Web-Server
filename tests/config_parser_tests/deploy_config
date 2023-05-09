@@ -1,0 +1,20 @@
+server
+{
+  listen 80;
+
+  location /static
+  {
+    root /folder1;
+  }
+
+
+  location /static1
+  {
+    root /folder2;
+  }
+
+  location /static2
+  {
+    root /folder3;
+  }
+}

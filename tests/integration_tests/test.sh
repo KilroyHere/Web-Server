@@ -2,14 +2,14 @@
 
 clean_up () {
     kill "$!"
-    rm curl.txt nc.txt listen.txt
+    rm nc.txt listen.txt curl.txt
     sed -i "s/localhost:$1/localhost/g" curl_expected.txt
 }
 
 curl_call() {
     touch curl.txt
-    curl localhost:"$1" -o curl.txt -s -s
-    request=$(cat ./listen.txt | grep "GOOD REQUEST")
+    curl localhost:"$1"/echo -o curl.txt -s -s
+    request=$(cat ./listen.txt | grep -oP "\bGOOD REQUEST\b")
     if [ "$1" != "80" ]
     then 
         sed -i "s/localhost/localhost:$1/g" curl_expected.txt
@@ -26,8 +26,9 @@ curl_call() {
 
     echo "Correct curl"
 
-    if [ "$request" != "GOOD REQUEST!!" ]
+    if [ "$request" != "GOOD REQUEST" ]
     then 
+        echo "$request"
         echo "incorrect response from curl"
         clean_up
         exit 1
@@ -41,7 +42,7 @@ curl_call() {
 nc_call() {
     touch nc.txt
     echo $1 | nc localhost "$2" > ./nc.txt 2>&1
-    request=$(cat ./listen.txt | grep "BAD REQUEST")
+    request=$(cat ./listen.txt | grep -oP "\bBAD REQUEST\b")
 
     diff nc.txt nc_expected.txt -w 
     if [ "$?" != "0" ]
@@ -53,7 +54,7 @@ nc_call() {
 
     echo "Correct nc"
 
-    if [ "$request" != "BAD REQUEST!!" ]
+    if [ "$request" != "BAD REQUEST" ]
     then 
         echo "incorrect response from nc"
         clean_up
@@ -81,9 +82,10 @@ echo "$file_name"
 
 sleep 2
 
-listen=$(cat ./listen.txt)
+listen=$(cat ./listen.txt | grep -oP '\b80\b')
+echo "$listen"
 
-if [ "$listen" != "Server listening at Port:$PORTVALUE" ]
+if [ "$listen" != "$PORTVALUE" ]
 then
     echo "Incorrect ping"
     clean_up

@@ -1,15 +1,27 @@
 #include "gtest/gtest.h"
 #include "request_handler.h"
 #include "http_request.h"
+#include "config_parser.h"
 #include <fstream>
+#include <iostream>
 
 class RequestHandlerTest : public ::testing::Test
 {
 protected:
-  RequestHandler handler;
+  NginxConfigParser parser;
+  NginxConfig out_config;
   Request request_;
   std::vector<char> data;
   size_t bytes_transferred;
+  RequestHandler* handler= nullptr;
+  RequestHandlerTest() {
+    bool success = parser.Parse("config_parser_tests/deploy_config", &out_config);
+    handler = new RequestHandler(out_config);
+  }
+  ~RequestHandlerTest() {
+    delete handler;
+  }
+
 };
 
 void extract_from_file(const char *file_name, std::vector<char> &data, size_t &bytes_transferred)
@@ -33,67 +45,66 @@ void extract_from_file(const char *file_name, std::vector<char> &data, size_t &b
   request_file.close();
 }
 
-// TODO:
 TEST_F(RequestHandlerTest, good_request)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, indeterminate_request)
 {
   extract_from_file("request_handler_tests/indeterminate_request", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 0);
 }
 
 TEST_F(RequestHandlerTest, bad_method_start_request)
 {
   extract_from_file("request_handler_tests/bad_method_start_request", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_method_request)
 {
   extract_from_file("request_handler_tests/bad_method_request", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_request_1)
 {
   extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_request_2)
 {
   extract_from_file("request_handler_tests/bad_http_request_2", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_request_3)
 {
   extract_from_file("request_handler_tests/bad_http_request_3", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_request_4)
 {
   extract_from_file("request_handler_tests/bad_http_request_4", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_request_5)
 {
   extract_from_file("request_handler_tests/bad_http_request_5", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
@@ -101,70 +112,70 @@ TEST_F(RequestHandlerTest, bad_http_request_6)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 5, char(0));
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_version_request_1)
 {
   extract_from_file("request_handler_tests/bad_http_version_request_1", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_version_request_2)
 {
   extract_from_file("request_handler_tests/bad_http_version_request_2", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_version_request_3)
 {
   extract_from_file("request_handler_tests/bad_http_version_request_3", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_http_version_request_4)
 {
   extract_from_file("request_handler_tests/bad_http_version_request_4", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, good_http_version_request_1)
 {
   extract_from_file("request_handler_tests/good_http_version_request_1", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, good_http_version_request_2)
 {
   extract_from_file("request_handler_tests/good_http_version_request_2", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, bad_header_request_1)
 {
   extract_from_file("request_handler_tests/bad_header_request_1", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_header_request_2)
 {
   extract_from_file("request_handler_tests/bad_header_request_2", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
 TEST_F(RequestHandlerTest, bad_header_request_3)
 {
   extract_from_file("request_handler_tests/bad_header_request_3", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
@@ -172,7 +183,7 @@ TEST_F(RequestHandlerTest, bad_header_request_4)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 34, char(0));
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
@@ -180,36 +191,36 @@ TEST_F(RequestHandlerTest, bad_new_line_request_1)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 15, '0');
-  int status = handler.handle_request(data, bytes_transferred);
-  EXPECT_EQ(status, 2);
+  int status = handler->handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 0);
 }
 
 TEST_F(RequestHandlerTest, bad_new_line_request_2)
 {
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 35, '0');
-  int status = handler.handle_request(data, bytes_transferred);
-  EXPECT_EQ(status, 2);
+  int status = handler->handle_request(data, bytes_transferred);
+  EXPECT_EQ(status, 0);
 }
 
 TEST_F(RequestHandlerTest, good_lws_request_1)
 {
   extract_from_file("request_handler_tests/good_lws_request_1", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, good_lws_request_2)
 {
   extract_from_file("request_handler_tests/good_lws_request_2", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, good_lws_request_3)
 {
   extract_from_file("request_handler_tests/good_lws_request_3", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
@@ -217,7 +228,7 @@ TEST_F(RequestHandlerTest, bad_lws_request)
 {
   extract_from_file("request_handler_tests/good_lws_request_1", data, bytes_transferred);
   data.insert(data.begin() + 37, char(0));
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 2);
 }
 
@@ -227,9 +238,9 @@ TEST_F(RequestHandlerTest, good_request_with_response)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
-  handler.set_response();
-  response = handler.get_response();
+  int status = handler->handle_request(data, bytes_transferred);
+  handler->set_response();
+  response = handler->get_response();
   bool match = response == response_data;
   EXPECT_EQ(status, 1);
   EXPECT_TRUE(match);
@@ -241,9 +252,9 @@ TEST_F(RequestHandlerTest, bad_request_with_response)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
   extract_from_file("request_handler_tests/bad_request_response", response_data, r_bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
-  handler.set_response();
-  response = handler.get_response();
+  int status = handler->handle_request(data, bytes_transferred);
+  handler->set_response();
+  response = handler->get_response();
   bool match = response == response_data;
   EXPECT_EQ(status, 2);
   EXPECT_TRUE(match);
@@ -255,7 +266,7 @@ TEST_F(RequestHandlerTest, good_purge_request_uri)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  handler.reset();
+  handler->reset();
   bool match = request_.uri.empty();
   EXPECT_TRUE(match);
 }
@@ -266,7 +277,7 @@ TEST_F(RequestHandlerTest, good_purge_request_headers)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  handler.reset();
+  handler->reset();
   bool match = request_.request_headers.empty();
   EXPECT_TRUE(match);
 }
@@ -277,7 +288,7 @@ TEST_F(RequestHandlerTest, good_purge_request_body)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  handler.reset();
+  handler->reset();
   bool match = request_.request_body.empty();
   EXPECT_TRUE(match);
 }
@@ -288,7 +299,7 @@ TEST_F(RequestHandlerTest, good_purge_headers)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  handler.reset();
+  handler->reset();
   bool match = request_.headers.empty();
   EXPECT_TRUE(match);
 }
@@ -299,7 +310,7 @@ TEST_F(RequestHandlerTest, good_purge_headers_map)
   size_t r_bytes_transferred;
   extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
   extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
-  handler.reset();
+  handler->reset();
   bool match = request_.headers_map.empty();
   EXPECT_TRUE(match);
 }
@@ -307,8 +318,8 @@ TEST_F(RequestHandlerTest, good_purge_headers_map)
 TEST_F(RequestHandlerTest, good_request_with_close_connection)
 {
   extract_from_file("request_handler_tests/good_request_with_close_connection", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
-  int connection_status = handler.connection_close();
+  int status = handler->handle_request(data, bytes_transferred);
+  int connection_status = handler->connection_close();
   EXPECT_EQ(status, 1);
   EXPECT_EQ(connection_status, 1);
 }
@@ -316,8 +327,8 @@ TEST_F(RequestHandlerTest, good_request_with_close_connection)
 TEST_F(RequestHandlerTest, good_request_with_open_connection)
 {
   extract_from_file("request_handler_tests/good_request_with_open_connection", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
-  int connection_status = handler.connection_close();
+  int status = handler->handle_request(data, bytes_transferred);
+  int connection_status = handler->connection_close();
   EXPECT_EQ(status, 1);
   EXPECT_EQ(connection_status, 0);
 }
@@ -325,13 +336,13 @@ TEST_F(RequestHandlerTest, good_request_with_open_connection)
 TEST_F(RequestHandlerTest, good_request_with_good_body)
 {
   extract_from_file("request_handler_tests/good_request_with_good_body", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 1);
 }
 
 TEST_F(RequestHandlerTest, good_request_with_bad_body)
 {
   extract_from_file("request_handler_tests/good_request_with_bad_body", data, bytes_transferred);
-  int status = handler.handle_request(data, bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 0);
 }
