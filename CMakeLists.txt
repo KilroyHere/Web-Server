@@ -39,7 +39,6 @@ add_library(response_handler_lib  src/response_handler.cc)
 add_library(config_parser_lib  config/config_parser.cc)
 add_library(logging_lib  src/logging.cc)
 add_library(mime_types_lib src/mime_types.cc)
-
 target_link_libraries(logging_lib  Boost::log_setup Boost::log)
 
 add_executable(server src/server_main.cc)
@@ -58,7 +57,7 @@ gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-#Generate Unit Test Coverage Report 
+# Generate Unit Test Coverage Report 
  include(cmake/CodeCoverageReportConfig.cmake)
  generate_coverage_report(
     TARGETS config_parser_lib session_lib http_request_lib http_response_lib http_server_lib request_handler_lib request_parser_lib server
@@ -71,4 +70,3 @@ if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
     )
 endif()
- 

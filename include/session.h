@@ -14,6 +14,9 @@ using boost::asio::ip::tcp;
 class session
 {
 public:
+  //Tests
+  friend class SessionTest;
+  
   ~session();
   session(boost::asio::io_service &io_service, NginxConfig config);
   // TODO: Old Constructor. No Action required. Need to remove eventually.
@@ -27,9 +30,9 @@ public:
 
 private:
   // Callback for async_read, handles the read data
-  void handle_read(const boost::system::error_code &error, size_t bytes_transferred);
+  int handle_read(const boost::system::error_code &error, size_t bytes_transferred);
   // Callback for async_write
-  void handle_write(const boost::system::error_code &error);
+  int handle_write(const boost::system::error_code &error);
 
   tcp::socket socket_;
   size_t max_buffer_size = 1024;

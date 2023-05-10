@@ -31,7 +31,7 @@ void session::async_read()
                                       boost::asio::placeholders::bytes_transferred));
 }
 
-void session::handle_read(const boost::system::error_code &error, size_t bytes_transferred)
+int session::handle_read(const boost::system::error_code &error, size_t bytes_transferred)
 {
   std::string log_message = "==================REQUEST===================\n";
   if (!error)
@@ -60,7 +60,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
       if (request_handler_.connection_close())
       {
         socket_.close();
-        return;
+        return 0;
       }
     }
     // Keep reading if request not handled or if request handled and connection not closed
@@ -75,7 +75,7 @@ void session::handle_read(const boost::system::error_code &error, size_t bytes_t
       BOOST_LOG_TRIVIAL(severity_level::error) << error << ": Error reading from TCP socket";
     }
     socket_.close();
-    return;
+    return 1;
   }
 }
 
@@ -85,14 +85,15 @@ void session::async_write(std::vector<char> response)
                            boost::bind(&session::handle_write, this, boost::asio::placeholders::error));
 }
 
-void session::handle_write(const boost::system::error_code &error)
+int session::handle_write(const boost::system::error_code &error)
 {
   if (!error)
   {
+    return 0;
   }
   else
   {
     socket_.close();
-    return;
+    return 1;
   }
 }
