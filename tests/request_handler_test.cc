@@ -346,3 +346,29 @@ TEST_F(RequestHandlerTest, good_request_with_bad_body)
   int status = handler->handle_request(data, bytes_transferred);
   EXPECT_EQ(status, 0);
 }
+
+TEST_F(RequestHandlerTest, good_static_request)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_static_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_static_request_response", response_data, r_bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
+  handler->set_response();
+  response = handler->get_response();
+  EXPECT_EQ(status, 1);
+}
+
+TEST_F(RequestHandlerTest, bad_static_request)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/bad_static_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/bad_static_request_response", response_data, r_bytes_transferred);
+  int status = handler->handle_request(data, bytes_transferred);
+  handler->set_response();
+  response = handler->get_response();
+  bool match = response == response_data;
+  EXPECT_EQ(status, 1);
+  EXPECT_TRUE(match);
+}
