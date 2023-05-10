@@ -77,6 +77,8 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
     socket_.close();
     return 1;
   }
+  // Shouldn't reach here
+  return 1;
 }
 
 void session::async_write(std::vector<char> response)
