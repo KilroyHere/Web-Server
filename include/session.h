@@ -14,9 +14,9 @@ using boost::asio::ip::tcp;
 class session
 {
 public:
-  //Tests
+  // Tests
   friend class SessionTest;
-  
+
   ~session();
   session(boost::asio::io_service &io_service, NginxConfig config);
   // TODO: Old Constructor. No Action required. Need to remove eventually.

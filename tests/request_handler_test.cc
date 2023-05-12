@@ -13,15 +13,16 @@ protected:
   Request request_;
   std::vector<char> data;
   size_t bytes_transferred;
-  RequestHandler* handler= nullptr;
-  RequestHandlerTest() {
+  RequestHandler *handler = nullptr;
+  RequestHandlerTest()
+  {
     bool success = parser.Parse("config_parser_tests/deploy_config", &out_config);
     handler = new RequestHandler(out_config);
   }
-  ~RequestHandlerTest() {
+  ~RequestHandlerTest()
+  {
     delete handler;
   }
-
 };
 
 void extract_from_file(const char *file_name, std::vector<char> &data, size_t &bytes_transferred)
