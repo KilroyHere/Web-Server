@@ -6,11 +6,3 @@ location /echo EchoRequestHandler { # no arguments
 location /static StaticRequestHandler {
   root ./folder1; # supports relative paths
 }
-
-location /static1 StaticRequestHandler {
-  root ./folder2; # supports relative paths
-}
-
-location /static2 StaticRequestHandler {
-  root ./folder3; # supports relative paths
-}

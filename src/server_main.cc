@@ -3,9 +3,15 @@
 #include <signal.h>
 #include <boost/asio.hpp>
 #include <boost/log/trivial.hpp>
-#include "http_server.h"
 #include "config_parser.h"
 #include "logging.h"
+#include "http_server.h"
+#include "request_handler_factory.h"
+#include "request_handler.h"
+#include <boost/beast/http.hpp>
+
+namespace beast = boost::beast;
+namespace http = beast::http;
 
 using boost::asio::ip::tcp;
 
@@ -46,7 +52,6 @@ int main(int argc, char *argv[])
   }
   catch (std::exception &e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
     BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
   }
 

@@ -24,12 +24,12 @@ public:
 class NginxConfig
 {
 public:
-  // TODO: Obselete function signature. Remove eventually. 
-  bool query_config(std::vector<std::string> query, std::string& value);
+  // TODO: Obselete function signature. Remove eventually.
+  bool query_config(std::vector<std::string> query, std::string &value);
   bool query_config(std::vector<std::string> query, std::vector<std::string> &values);
   std::string ToString(int depth = 0);
-  bool relative_path_query(std::vector<std::string> query, std::string& value, int index);
-  bool config_port_num(std::vector<std::string> query, std::string& value);
+  bool relative_path_query(std::vector<std::string> query, std::string &value, int index);
+  bool config_port_num(std::vector<std::string> query, std::string &value);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };
 
@@ -37,7 +37,7 @@ public:
 class NginxConfigParser
 {
 public:
-  //NginxConfigParser() {}
+  // NginxConfigParser() {}
 
   // Take a opened config file or file name (respectively) and store the
   // parsed config in the provided NginxConfig out-param.  Returns true
@@ -71,4 +71,4 @@ private:
   TokenType ParseToken(std::istream *input, std::string *value);
 };
 
-#endif //CONFIG_PARSER_H
+#endif // CONFIG_PARSER_H
