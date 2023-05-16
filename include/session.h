@@ -9,10 +9,9 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/http/status.hpp>
 #include <boost/beast/core/buffers_to_string.hpp>
-// #include "request_handler.h"
+#include "request_handler.h"
 #include "request_parser.h"
 #include "config_parser.h"
-#include "new_request_handler.h"
 #include "request_handler_factory.h"
 
 using boost::asio::ip::tcp;

@@ -48,7 +48,7 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
         if (parse_result != RequestParser::indeterminate)
         {
             // Create a Request Handler
-            std::unique_ptr<NewRequestHandler> handler = nullptr;
+            std::unique_ptr<RequestHandler> handler = nullptr;
 
             if (parse_result == RequestParser::good)
             {
@@ -60,21 +60,25 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
             else
             {
                 // LOGGING:
-                BOOST_LOG_TRIVIAL(info) << "===============BAD REQUEST!!===============";
+                BOOST_LOG_TRIVIAL(severity_level::info) << "===============BAD REQUEST!!===============";
                 NginxConfig empty_config;
                 handler = std::make_unique<BadRequestHandler>("", empty_config);
                 connection_close = true;
             }
             // Handle the request
-            bool request_handled = handler->handle_request(&http_request_, &http_response_);
+            bool request_handled = handler->handle_request(http_request_, &http_response_);
 
             // If request is handled
             if (request_handled)
             {
+                std::cerr << "bruh" << std::endl;
                 // Convert the response into a buffer
                 std::ostringstream oss;
                 oss << http_response_;
                 std::string response_str = oss.str();
+                BOOST_LOG_TRIVIAL(severity_level::info) << "===============SENDING RESPONSE!!=============== ";
+                BOOST_LOG_TRIVIAL(severity_level::info) <<  "\n" << http_response_.base();
+                BOOST_LOG_TRIVIAL(severity_level::info) << "===========================================";
                 std::vector<char> response_buffer(response_str.begin(), response_str.end());
 
                 // Send the response
@@ -123,16 +127,21 @@ int session::handle_write(const boost::system::error_code &error)
     {
         socket_.close();
     }
+    return 0; //No return statement?
 }
 
 void session::set_http_request()
 {
     http_request_.method_string(request_.method);
-    http_request_.set(boost::beast::http::field::uri, request_.uri);
-    http_request_.set(boost::beast::http::field::path, request_.path);
+    // http_request_.set(boost::beast::http::field::uri, request_.uri);
+    http_request_.target(request_.uri);
+    // http_request_.set(boost::beast::http::field::path, request_.path);
     http_request_.version(request_.http_version_major * 10 + request_.http_version_minor);
+    // http_request_.set(http::field::content_type, "text/plain");
+
     for (auto x : request_.headers_map)
     {
+        std::cerr << x.first << " " << x.second << std::endl;
         http_request_.insert(x.first, x.second);
     }
     http_request_.body() = request_.request_body;
@@ -142,7 +151,6 @@ void session::set_http_request()
 bool session::read_body(std::vector<char> data, size_t bytes_transferred)
 {
     int read_from = parser_.read_from_;
-    request_.set_headers_map();
     parser_.reset();
     int content_length = stoi(request_.headers_map["content-length"]);
 
@@ -167,7 +175,7 @@ RequestParser::result_type session::request_parse(size_t bytes_transferred)
     {
         // Read header
         RequestParser::result_type result = parser_.parse(request_, data_, bytes_transferred);
-
+        request_.set_headers_map();
         // Read request body if needed
         if (result == RequestParser::good && (request_.headers_map.find("content-length") != request_.headers_map.end()))
         {

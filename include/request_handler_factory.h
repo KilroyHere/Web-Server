@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <sys/stat.h>
 #include <boost/filesystem.hpp>
-#include "new_request_handler.h"
+#include "request_handler.h"
 
 #include <boost/beast/http.hpp>
 
@@ -24,7 +24,7 @@ class RequestHandlerFactory
 public:
   RequestHandlerFactory(NginxConfig config);
 
-  std::unique_ptr<NewRequestHandler> createHandler(const http::request<http::string_body> *http_request);
+  std::unique_ptr<RequestHandler> createHandler(const http::request<http::string_body> *http_request);
 
 private:
 

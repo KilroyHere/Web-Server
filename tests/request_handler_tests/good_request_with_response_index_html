@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>World Clock</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      
+      h1 {
+        margin-top: 50px;
+        margin-bottom: 30px;
+        font-size: 36px;
+      }
+      
+      p {
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+      
+      span {
+        font-weight: bold;
+        font-size: 32px;
+      }
+    </style>
+    <script>
+      function updateTime() {
+        // Get the current time
+        const now = new Date();
+
+        // Set the timezone offsets for the cities
+        const newYorkOffset = -4;
+        const londonOffset = 1;
+        const tokyoOffset = 9;
+
+        // Calculate the time in each city based on the current time and timezone offset
+        const newYorkTime = new Date(now.getTime() + (newYorkOffset * 60 * 60 * 1000));
+        const londonTime = new Date(now.getTime() + (londonOffset * 60 * 60 * 1000));
+        const tokyoTime = new Date(now.getTime() + (tokyoOffset * 60 * 60 * 1000));
+
+        // Display the time in each city
+        document.getElementById("new-york-time").textContent = newYorkTime.toLocaleTimeString();
+        document.getElementById("london-time").textContent = londonTime.toLocaleTimeString();
+        document.getElementById("tokyo-time").textContent = tokyoTime.toLocaleTimeString();
+      }
+
+      // Update the time every second
+      setInterval(updateTime, 1000);
+    </script>
+  </head>
+  <body>
+    <h1>World Clock</h1>
+    <p>New York: <span id="new-york-time"></span></p>
+    <p>London: <span id="london-time"></span></p>
+    <p>Tokyo: <span id="tokyo-time"></span></p>
+  </body>
+</html>

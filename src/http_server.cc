@@ -6,7 +6,7 @@ HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service)
     : config_(config), io_service_(io_service), acceptor_(io_service)
 {
 
-  std::vector<std::string> query{"server", "listen"};
+  std::vector<std::string> query{"port"};
   std::string port;
   if (!config_.config_port_num(query, port))
   {

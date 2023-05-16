@@ -10,6 +10,8 @@
 #include "http_response.h"
 #include "mime_types.h"
 
+// DEPRACATED
+
 class ResponseHandler
 {
 public:
