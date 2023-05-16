@@ -16,7 +16,9 @@ FROM ubuntu:jammy as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/config/deploy_config .
-COPY --from=builder /usr/src/project/static ./static
+COPY --from=builder /usr/src/project/folder1 ./folder1
+COPY --from=builder /usr/src/project/folder2 ./folder2
+COPY --from=builder /usr/src/project/folder3 ./folder3
 
 EXPOSE 8080 80
 
