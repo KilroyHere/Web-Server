@@ -50,6 +50,12 @@ void RequestHandlerFactory::set_path_root_map()
 
 std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http::request<http::string_body> *http_request)
 {
+
+  // If given a invalid or malformed http_request, session would send a nullptr to indicate a bad request.
+  if (http_request == nullptr) {
+    return std::make_unique<BadRequestHandler>(std::string(""), parsed_config);
+  }
+
   // Find the corresponding handler based on the URI prefix
   std::string request_uri = http_request->target().to_string();
   std::vector<std::string> uri_vector;

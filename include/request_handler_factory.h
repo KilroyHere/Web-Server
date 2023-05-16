@@ -24,11 +24,13 @@ class RequestHandlerFactory
 public:
   RequestHandlerFactory(NginxConfig config);
 
-  std::unique_ptr<RequestHandler> createHandler(const http::request<http::string_body> *http_request);
+  // Given a http_request, creates a Request Handler object for the corresponding request.
+  std::unique_ptr<RequestHandler> createHandler(const http::request<http::string_body> *http_request); 
 
 private:
-
+  // Creates the mapping for the path of a root with respect to the configuration file.
   void set_path_root_map();
+  // Creates the mapping for the path of a handler with respsect to the configuration file.
   void set_path_handler_map();
 
   NginxConfigParser parser;

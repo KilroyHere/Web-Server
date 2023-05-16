@@ -26,7 +26,10 @@ bool StaticRequestHandler::handle_request(const http::request<http::string_body>
   if (file.fail())
   {
     BOOST_LOG_TRIVIAL(info) << "Couldn't open file";
-    return false;
+    http_response->result(http::status::not_found);
+    http_response->body() = "";
+    http_response->prepare_payload();
+    return true;
   }
   BOOST_LOG_TRIVIAL(info) << "Reading the file.";
   std::string body = "";

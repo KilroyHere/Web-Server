@@ -2,6 +2,7 @@
 #include "request_handler_factory.h"
 #include "request_handler.h"
 #include "config_parser.h"
+#include "session.h"
 #include <fstream>
 #include <iostream>
 #include <boost/beast/http.hpp>
@@ -20,6 +21,8 @@ class RequestHandlerTest : public ::testing::Test
     }
     NginxConfigParser parser;
     NginxConfig out_config;
+    // std::vector<char> data;
+    // size_t bytes_transferred;
 };
 
 
@@ -131,6 +134,212 @@ TEST_F(RequestHandlerTest, good_static_mime_jpeg_test_request)
   EXPECT_TRUE(res.body() == body);
   EXPECT_TRUE(res.result() == http::status::ok);
 }
+
+TEST_F(RequestHandlerTest, good_static_mime_txt_test_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_mime_txt_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static/mime_txt_test.txt", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static_ziptest_pdf_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_ziptest_pdf";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static/ziptest.pdf", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static_mime_pdf_test_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_mime_pdf_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static1/mime_pdf_test.pdf", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static_mime_png_test_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_mime_png_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static1/mime_png_test.png", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static_mime_zip_test_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_mime_zip_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static1/mime_zip_test.zip", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static1_zip_test_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_static1_zip_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static1/ziptest.pdf", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, good_static2_mime_gif_request)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_static2_mime_gif_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static2/mime_gif_test.gif", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, default_400_request_empty_request)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(nullptr);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, invalid_uri_request_404)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/error", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, invalid_uri_static_request_404)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static/not_real_file.pdf", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  bool status = handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, empty_path_uri_request_404)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
 
 // TEST_F(RequestHandlerTest, good_request)
 // {

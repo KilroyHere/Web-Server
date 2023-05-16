@@ -127,6 +127,8 @@ int session::handle_write(const boost::system::error_code &error)
     if (error)
     {
         socket_.close();
+        BOOST_LOG_TRIVIAL(severity_level::error) << "Closing connection, ending session.";
+        return 1;
     }
     return 0; // No return statement?
 }
