@@ -11,41 +11,14 @@
 #include <boost/beast/http.hpp>
 
 namespace beast = boost::beast;
-namespace http = beast::http; 
+namespace http = beast::http;
 
 using boost::asio::ip::tcp;
 
 int main(int argc, char *argv[])
 {
-  // NginxConfigParser config_parser;
-  // NginxConfig config;
-  // if (!config_parser.Parse(argv[1], &config))
-  // {
-  //   BOOST_LOG_TRIVIAL(error) << "Invalid config file, server not started.";
-  //   return 1;
-  // }
-
-  // RequestHandlerFactory nhf(config);
-  // http::request<http::string_body> req{http::verb::get, "/static/index.html", 10};
-
-  // std::ostringstream os;
-  // // os << req;
-  // // std::cerr << os.str() << std::endl;
-  // // os.clear();
-
-  // std::unique_ptr<RequestHandler> res = nhf.createHandler(&req);
-  // // std::cerr<< req.version() << std::endl;
-  // http::response<http::string_body> http_response;
-  // bool result = res->handle_request(req, &http_response);
-  // std::ostringstream oss;
-  // oss << http_response;
-  // std::cerr << oss.str() << std::endl;
-  // // std::cerr << http_response.body() << std::endl;
-  
-
-
-  // Logging::init_log();
-  // signal(SIGINT, Logging::termintion_log);
+  Logging::init_log();
+  signal(SIGINT, Logging::termintion_log);
 
   try
   {
@@ -79,7 +52,6 @@ int main(int argc, char *argv[])
   }
   catch (std::exception &e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
     BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
   }
 

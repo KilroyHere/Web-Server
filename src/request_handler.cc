@@ -1,12 +1,6 @@
 #include "request_handler.h"
 
-// bool RequestHandler::connection_close(const http::request<std::string> *http_request)
-// {
-//     //check header connection is set to close -> return false;
-//     return true;
-// }
-
-EchoRequestHandler::EchoRequestHandler( const std::string &request_uri, NginxConfig &config) {}
+EchoRequestHandler::EchoRequestHandler(const std::string &request_uri, NginxConfig &config) {}
 
 StaticRequestHandler::StaticRequestHandler(const std::string &request_uri, NginxConfig &config) : config_(config), file_path(request_uri) {}
 
@@ -14,24 +8,24 @@ BadRequestHandler::BadRequestHandler(const std::string &request_uri, NginxConfig
 
 NotFoundRequestHandler::NotFoundRequestHandler(const std::string &request_uri, NginxConfig &config) {}
 
-bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
+bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
-    std::ostringstream oss;
-    oss << http_request;
-    http_response->result(http::status::ok); 
-    http_response->version(http_request.version());
-    http_response->body() = oss.str();
-    http_response->set(http::field::content_type, "text/plain");
-    http_response->prepare_payload();
-    return true;
+  std::ostringstream oss;
+  oss << http_request;
+  http_response->result(http::status::ok);
+  http_response->version(http_request.version());
+  http_response->body() = oss.str();
+  http_response->set(http::field::content_type, "text/plain");
+  http_response->prepare_payload();
+  return true;
 }
-bool StaticRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
-{ 
+bool StaticRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+{
   // read file contents
   std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
   if (file.fail())
   {
-    std::cerr << "couldn't open file" << std::endl;
+    BOOST_LOG_TRIVIAL(info) << "Couldn't open file";
     return false;
   }
   BOOST_LOG_TRIVIAL(info) << "Reading the file.";
@@ -60,7 +54,7 @@ bool StaticRequestHandler::handle_request(const http::request<http::string_body>
   return true;
 }
 
-bool BadRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
+bool BadRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   http_response->result(http::status::bad_request);
   http_response->body() = "";
@@ -68,9 +62,8 @@ bool BadRequestHandler::handle_request(const http::request<http::string_body> ht
   return true;
 }
 
-bool NotFoundRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
-{ 
-  std::cerr << "handling something" << std::endl;
+bool NotFoundRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+{
   http_response->result(http::status::not_found);
   http_response->body() = "";
   http_response->prepare_payload();

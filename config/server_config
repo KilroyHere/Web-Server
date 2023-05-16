@@ -1,21 +1,16 @@
-server
-{
+port 8080; # port my server listens on
 
-  listen 8080;
+location /echo EchoRequestHandler { # no arguments
+}
 
-  location /static
-  {
-    root /folder1;
-  }
+location /static StaticRequestHandler {
+  root ./folder1; # supports relative paths
+}
 
+location /static1 StaticRequestHandler {
+  root ./folder2; # supports relative paths
+}
 
-  location /static1
-  {
-    root /folder2;
-  }
-
-  location /static2
-  {
-    root /folder3;
-  }
+location /static2 StaticRequestHandler {
+  root ./folder3; # supports relative paths
 }

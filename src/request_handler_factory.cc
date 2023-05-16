@@ -21,7 +21,7 @@ void RequestHandlerFactory::set_path_handler_map()
     std::vector<std::string> handlers;
     bool path_found = parsed_config.query_config(handler_query, handlers);
 
-    // only add path handler if path is found
+    // Only add path handler if path is found
     if (path_found)
     {
       path_handler_map_[path] = handlers.at(0);
@@ -40,12 +40,10 @@ void RequestHandlerFactory::set_path_root_map()
     std::vector<std::string> roots;
     bool root_found = parsed_config.query_config(root_query, roots);
 
-    // only add root to path if root is found
+    // Only add root to path if root is found
     if (root_found)
     {
-      std::cerr << roots.at(0) << " " << path_handler_pair.first << " " << path_handler_pair.second << std::endl;
       path_root_map_[path_handler_pair.first] = roots.at(0);
-      // std::cerr << path_handler_pair.first << std::endl;
     }
   }
 }
@@ -54,40 +52,39 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
 {
   // Find the corresponding handler based on the URI prefix
   std::string request_uri = http_request->target().to_string();
-  std::vector<std::string> uri_vector; 
-  
+  std::vector<std::string> uri_vector;
+
   boost::split(uri_vector, request_uri, boost::is_any_of("/"));
   std::string uri_path = uri_vector.size() >= 2 ? "/" + uri_vector.at(1) : std::string("");
-  
-  //check if uri_path is empty
+
+  // Check if uri_path is empty
   if (uri_path.empty())
   {
-    std::cerr << "not found request handler" << std::endl;
     return std::make_unique<NotFoundRequestHandler>(request_uri, parsed_config);
   }
   std::string handler = path_handler_map_.find(uri_path) != path_handler_map_.end() ? path_handler_map_[uri_path] : std::string("");
-  std::string root = uri_vector.size() > 2 ? "/" + uri_vector.at(2) : std::string(""); 
-  // std::cerr << "path: " << path_root_map_[uri_path] << std::endl;
-  // std::cerr << "root: " << root << std::endl;
+  std::string root = uri_vector.size() > 2 ? "/" + uri_vector.at(2) : std::string("");
   std::string new_request_uri = "." + path_root_map_[uri_path] + root;
-  // std::cerr << new_request_uri << std::endl;
 
   // Unique static handlers -- should be in request handler -> static handler
-  if ( handler == "StaticRequestHandler" && path_root_map_.find(uri_path) == path_root_map_.end()) 
+  if (handler == "StaticRequestHandler" && path_root_map_.find(uri_path) == path_root_map_.end())
   {
-    // std::cerr << "No root" << std::endl;
-    return std::make_unique<NotFoundRequestHandler>(new_request_uri, parsed_config);    
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating NotFoundRequestHandler";
+    return std::make_unique<NotFoundRequestHandler>(new_request_uri, parsed_config);
   }
   else if (handler == "EchoRequestHandler")
   {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating EchoRequestHandler";
     return std::make_unique<EchoRequestHandler>(new_request_uri, parsed_config);
   }
   else if (handler == "StaticRequestHandler")
   {
-    return std::make_unique<StaticRequestHandler>(new_request_uri, parsed_config); 
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating StaticRequestHandler";
+    return std::make_unique<StaticRequestHandler>(new_request_uri, parsed_config);
   }
   else
   {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating NotFoundRequestHandler";
     return std::make_unique<NotFoundRequestHandler>(new_request_uri, parsed_config);
   }
 }

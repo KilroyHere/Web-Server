@@ -24,8 +24,6 @@ public:
 
     ~session();
     session(boost::asio::io_service &io_service, NginxConfig config);
-    // TODO: Old Constructor. No Action required. Need to remove eventually.
-    // session(boost::asio::io_service &io_service);
     // Gets the socket associated with this session
     tcp::socket &get_socket();
     // Read from the socket

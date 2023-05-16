@@ -1,8 +1,0 @@
-port 80; # port my server listens on
-
-location /echo EchoRequestHandler { # no arguments
-}
-
-location /static StaticRequestHandler {
-  root ./folder1; # supports relative paths
-}

@@ -34,18 +34,14 @@ add_library(http_server_lib src/http_server.cc)
 add_library(session_lib src/session.cc)
 add_library(request_parser_lib src/request_parser.cc)
 
-add_library(http_request_lib src/http_request.cc) 
-# add_library(http_response_lib src/http_response.cc) DEPRACATED
-# add_library(request_handler_lib  src/request_handler.cc) DEPRACATED
-# add_library(response_handler_lib  src/response_handler.cc) DEPRACATED
 
 add_library(config_parser_lib  config/config_parser.cc)
 add_library(logging_lib  src/logging.cc)
 add_library(mime_types_lib src/mime_types.cc)
 
-
-add_library(request_handler_factory_lib src/request_handler_factory.cc) # added
-add_library(request_handler_lib src/request_handler.cc) # added
+add_library(http_request_lib src/http_request.cc) 
+add_library(request_handler_factory_lib src/request_handler_factory.cc)
+add_library(request_handler_lib src/request_handler.cc)
 
 target_link_libraries(logging_lib  Boost::log_setup Boost::log)
 
