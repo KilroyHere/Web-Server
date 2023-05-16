@@ -61,7 +61,8 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
             {
                 // LOGGING:
                 BOOST_LOG_TRIVIAL(info) << "===============BAD REQUEST!!===============";
-                handler = std::make_unique<BadRequestHandler>();
+                NginxConfig empty_config;
+                handler = std::make_unique<BadRequestHandler>("", empty_config);
                 connection_close = true;
             }
             // Handle the request
@@ -71,7 +72,9 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
             if (request_handled)
             {
                 // Convert the response into a buffer
-                std::string response_str = boost::beast::buffers_to_string(http_response_.body().data());
+                std::ostringstream oss;
+                oss << http_response_;
+                std::string response_str = oss.str();
                 std::vector<char> response_buffer(response_str.begin(), response_str.end());
 
                 // Send the response

@@ -42,9 +42,9 @@ private:
     // Set the content of boost::beast::http:request
     void set_http_request();
     // Read the body of a request
-    bool session::read_body(std::vector<char> data, size_t bytes_transferred);
+    bool read_body(std::vector<char> data, size_t bytes_transferred);
     // Parse data into request
-    RequestParser::result_type session::request_parse(size_t bytes_transferred);
+    RequestParser::result_type request_parse(size_t bytes_transferred);
     // Reset all request and response
     void reset();
 
