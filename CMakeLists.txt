@@ -51,6 +51,9 @@ target_link_libraries(server Boost::system http_server_lib session_lib config_pa
 add_executable(config_parser_test tests/config_parser_test.cc)
 target_link_libraries(config_parser_test Boost::system Boost::log Boost::log_setup config_parser_lib gtest_main)
 
+add_executable(request_parser_test tests/request_parser_test.cc)
+target_link_libraries(request_parser_test  Boost::system Boost::log Boost::log_setup request_handler_factory_lib request_handler_lib request_parser_lib config_parser_lib mime_types_lib gtest_main)
+
 add_executable(request_handler_test tests/request_handler_test.cc)
 target_link_libraries(request_handler_test  Boost::system Boost::log Boost::log_setup request_handler_factory_lib request_handler_lib config_parser_lib mime_types_lib gtest_main)
 
@@ -59,18 +62,18 @@ target_link_libraries(session_test  Boost::system Boost::log Boost::log_setup co
 
 # add_executable(response_handler_test tests/response_handler_test.cc)
 # target_link_libraries(response_handler_test  Boost::system Boost::log Boost::log_setup config_parser_lib http_server_lib session_lib  request_handler_lib  response_handler_lib request_parser_lib http_request_lib http_response_lib mime_types_lib gtest_main)
-    
+
 
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(response_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Generate Unit Test Coverage Report 
  include(cmake/CodeCoverageReportConfig.cmake)
  generate_coverage_report(
     TARGETS config_parser_lib session_lib http_request_lib http_server_lib request_handler_lib request_parser_lib request_handler_factory_lib server
-    TESTS config_parser_test request_handler_test session_test
+    TESTS config_parser_test request_handler_test request_parser_test session_test
 )
 
 # if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")

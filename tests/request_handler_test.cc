@@ -16,54 +16,12 @@ class RequestHandlerTest : public ::testing::Test
   protected:
     RequestHandlerTest()
     {
-      bool success = parser.Parse("config_parser_tests/new_server_config", &out_config); // TODO: change new_server_config -> server_config and delete old one.
+      bool success = parser.Parse("config_parser_tests/new_server_config", &out_config);
       assert(success == true);
     }
     NginxConfigParser parser;
     NginxConfig out_config;
-    // std::vector<char> data;
-    // size_t bytes_transferred;
 };
-
-
-// class RequestHandlerTest : public ::testing::Test
-// {
-// protected:
-//   NginxConfigParser parser;
-//   NginxConfig out_config; 
-//   Request request_;
-//   std::vector<char> data;
-//   size_t bytes_transferred;
-//   RequestHandler* handler= nullptr;
-//   RequestHandlerTest() {
-//     bool success = parser.Parse("config_parser_tests/deploy_config", &out_config);
-//     handler = new RequestHandler(out_config);
-//   }
-//   ~RequestHandlerTest() {
-//     delete handler;
-//   }
-// };
-
-void extract_from_file(const char *file_name, std::vector<char> &data, size_t &bytes_transferred)
-{
-  std::ifstream request_file(file_name);
-  char c;
-  bytes_transferred = 0;
-  if (request_file.is_open())
-  {
-    while (request_file.good())
-    {
-      request_file.get(c);
-      data.push_back(c);
-      if (c == '\n')
-      {
-        data.insert(data.end() - 1, '\r');
-      }
-    }
-  }
-  bytes_transferred = data.size();
-  request_file.close();
-}
 
 TEST_F(RequestHandlerTest, default_404_request)
 {
