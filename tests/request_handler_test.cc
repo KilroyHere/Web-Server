@@ -13,40 +13,21 @@ namespace http = beast::http;
 
 class RequestHandlerTest : public ::testing::Test
 {
-  protected:
-    RequestHandlerTest()
-    {
-      bool success = parser.Parse("config_parser_tests/new_server_config", &out_config);
-      assert(success == true);
-    }
-    NginxConfigParser parser;
-    NginxConfig out_config;
+protected:
+  RequestHandlerTest()
+  {
+    bool success = parser.Parse("config_parser_tests/new_server_config", &out_config);
+    assert(success == true);
+  }
+  NginxConfigParser parser;
+  NginxConfig out_config;
 };
-
-
-// class RequestHandlerTest : public ::testing::Test
-// {
-// protected:
-//   NginxConfigParser parser;
-//   NginxConfig out_config; 
-//   Request request_;
-//   std::vector<char> data;
-//   size_t bytes_transferred;
-//   RequestHandler* handler= nullptr;
-//   RequestHandlerTest() {
-//     bool success = parser.Parse("config_parser_tests/deploy_config", &out_config);
-//     handler = new RequestHandler(out_config);
-//   }
-//   ~RequestHandlerTest() {
-//     delete handler;
-//   }
-// };
 
 void extract_from_file(const char *file_name, std::vector<char> &data)
 {
   std::ifstream request_file(file_name);
   char c;
-  
+
   if (request_file.is_open())
   {
     while (request_file.good())
@@ -59,7 +40,7 @@ void extract_from_file(const char *file_name, std::vector<char> &data)
       }
     }
   }
-  
+
   request_file.close();
 }
 
@@ -89,16 +70,15 @@ TEST_F(RequestHandlerTest, good_echo_request)
 
 TEST_F(RequestHandlerTest, bad_echo_request)
 {
- std::vector<char> data;
- //extract_from_file("request_handler_tests/bad_header_request_1", data);
- 
- RequestHandlerFactory nhf(out_config);
- http::request<http::string_body> req{http::verb::get, "/", 1};
- std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
- http::response<http::string_body> res;
- handler->handle_request(req, &res);
- EXPECT_TRUE(res.result() == http::status::not_found);
+  std::vector<char> data;
+  // extract_from_file("request_handler_tests/bad_header_request_1", data);
 
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/", 1};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.result() == http::status::not_found);
 }
 
 TEST_F(RequestHandlerTest, good_static_index_html_request)
@@ -361,4 +341,3 @@ TEST_F(RequestHandlerTest, empty_path_uri_request_404)
   EXPECT_TRUE(res.body() == "");
   EXPECT_TRUE(res.result() == http::status::not_found);
 }
-

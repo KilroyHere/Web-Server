@@ -1,0 +1,4 @@
+GET /echo HTTP/1.1
+Host: 34.83.71.241
+User-Agent: curl/7.81.0
+Accept: */*

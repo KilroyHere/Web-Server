@@ -51,77 +51,77 @@ void extract_from_file(const char *file_name, std::vector<char> &data, size_t &b
 
 TEST_F(RequestParserTest, good_parse)
 {
-  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_request", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, bad_parse)
 {
-  extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, indeterminate_parse)
 {
-  extract_from_file("request_handler_tests/invalid_file", data, bytes_transferred);
+  extract_from_file("request_parser_tests/indeterminate_request", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::indeterminate);
 }
 
 TEST_F(RequestParserTest, bad_method_start_request)
 {
-  extract_from_file("request_handler_tests/bad_method_start_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_method_start_request", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_method_request)
 {
-  extract_from_file("request_handler_tests/bad_method_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_method_request", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_1)
 {
-  extract_from_file("request_handler_tests/bad_http_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_2)
 {
-  extract_from_file("request_handler_tests/bad_http_request_2", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_2", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_3)
 {
-  extract_from_file("request_handler_tests/bad_http_request_3", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_3", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_4)
 {
-  extract_from_file("request_handler_tests/bad_http_request_4", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_4", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_5)
 {
-  extract_from_file("request_handler_tests/bad_http_request_5", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_request_5", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_request_6)
 {
-  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 5, char(0));
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
@@ -129,70 +129,70 @@ TEST_F(RequestParserTest, bad_http_request_6)
 
 TEST_F(RequestParserTest, bad_http_version_request_1)
 {
-  extract_from_file("request_handler_tests/bad_http_version_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_version_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_version_request_2)
 {
-  extract_from_file("request_handler_tests/bad_http_version_request_2", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_version_request_2", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_version_request_3)
 {
-  extract_from_file("request_handler_tests/bad_http_version_request_3", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_version_request_3", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_http_version_request_4)
 {
-  extract_from_file("request_handler_tests/bad_http_version_request_4", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_http_version_request_4", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, good_http_version_request_1)
 {
-  extract_from_file("request_handler_tests/good_http_version_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_http_version_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, good_http_version_request_2)
 {
-  extract_from_file("request_handler_tests/good_http_version_request_2", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_http_version_request_2", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, bad_header_request_1)
 {
-  extract_from_file("request_handler_tests/bad_header_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_header_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_header_request_2)
 {
-  extract_from_file("request_handler_tests/bad_header_request_2", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_header_request_2", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_header_request_3)
 {
-  extract_from_file("request_handler_tests/bad_header_request_3", data, bytes_transferred);
+  extract_from_file("request_parser_tests/bad_header_request_3", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
 }
 
 TEST_F(RequestParserTest, bad_header_request_4)
 {
-  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 34, char(0));
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);
@@ -200,7 +200,7 @@ TEST_F(RequestParserTest, bad_header_request_4)
 
 TEST_F(RequestParserTest, bad_new_line_request_1)
 {
-  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 15, '0');
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::indeterminate);
@@ -208,7 +208,7 @@ TEST_F(RequestParserTest, bad_new_line_request_1)
 
 TEST_F(RequestParserTest, bad_new_line_request_2)
 {
-  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_request", data, bytes_transferred);
   data.insert(data.begin() + 35, '0');
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::indeterminate);
@@ -216,28 +216,28 @@ TEST_F(RequestParserTest, bad_new_line_request_2)
 
 TEST_F(RequestParserTest, good_lws_request_1)
 {
-  extract_from_file("request_handler_tests/good_lws_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_lws_request_1", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, good_lws_request_2)
 {
-  extract_from_file("request_handler_tests/good_lws_request_2", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_lws_request_2", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, good_lws_request_3)
 {
-  extract_from_file("request_handler_tests/good_lws_request_3", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_lws_request_3", data, bytes_transferred);
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::good);
 }
 
 TEST_F(RequestParserTest, bad_lws_request)
 {
-  extract_from_file("request_handler_tests/good_lws_request_1", data, bytes_transferred);
+  extract_from_file("request_parser_tests/good_lws_request_1", data, bytes_transferred);
   data.insert(data.begin() + 37, char(0));
   RequestParser::result_type result = rp.parse(request_, data, bytes_transferred);
   EXPECT_TRUE(result == RequestParser::result_type::bad);

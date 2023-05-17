@@ -60,10 +60,6 @@ target_link_libraries(request_handler_test  Boost::system Boost::log Boost::log_
 add_executable(session_test tests/session_test.cc)
 target_link_libraries(session_test  Boost::system Boost::log Boost::log_setup config_parser_lib http_server_lib session_lib  request_handler_factory_lib request_handler_lib request_parser_lib http_request_lib mime_types_lib gtest_main)
 
-# add_executable(response_handler_test tests/response_handler_test.cc)
-# target_link_libraries(response_handler_test  Boost::system Boost::log Boost::log_setup config_parser_lib http_server_lib session_lib  request_handler_lib  response_handler_lib request_parser_lib http_request_lib http_response_lib mime_types_lib gtest_main)
-
-
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -72,7 +68,7 @@ gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 # Generate Unit Test Coverage Report 
  include(cmake/CodeCoverageReportConfig.cmake)
  generate_coverage_report(
-    TARGETS config_parser_lib session_lib http_request_lib http_server_lib request_handler_lib request_parser_lib request_handler_factory_lib server
+    TARGETS config_parser_lib session_lib http_request_lib http_server_lib request_handler_lib request_parser_lib request_handler_factory_lib
     TESTS config_parser_test request_handler_test request_parser_test session_test
 )
 
