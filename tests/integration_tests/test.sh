@@ -3,12 +3,13 @@
 clean_up () {
     kill "$!"
     rm nc.txt listen.txt curl.txt
-    sed -i "s/localhost:$1/localhost/g" curl_expected.txt
+    # sed -i "s/localhost:$1/localhost/g" curl_expected.txt
 }
 
 curl_call() {
     touch curl.txt
-    curl localhost:"$1"/echo -o curl.txt -s -s
+    curl localhost:"$1"/echo -o curl.txt -s
+    echo "$1"
     request=$(cat ./listen.txt | grep -oP "\bGOOD REQUEST\b")
     if [ "$1" != "80" ]
     then 
@@ -74,7 +75,7 @@ PORTVALUE="80"
 if [ file_name != "$DEFAULTVALUE" ]
 then
     
-    PORTVALUE=$(grep -oP 'listen\s*\b(\d+)\b;' $file_name | sed 's/listen\s*\b\([0-9]\+\)\b;/\1/')
+    PORTVALUE=$(grep -oP 'port\s*\b(\d+)\b;' $file_name | sed 's/port\s*\b\([0-9]\+\)\b;/\1/')
 fi
 echo "$PORTVALUE"
 echo "$file_name"
@@ -83,6 +84,7 @@ echo "$file_name"
 sleep 2
 
 listen=$(cat ./listen.txt | grep -oP '\b80\b')
+echo "$listen"
 echo "$listen"
 
 if [ "$listen" != "$PORTVALUE" ]
@@ -104,5 +106,7 @@ echo "test.sh was successful"
 
 clean_up
 exit 0
+
+
 
 
