@@ -25,11 +25,39 @@ class SessionTest : public ::testing::Test
         {
             session_->handle_write(error);
         }
+        void reset()
+        {
+            session_->reset();
+        }
         NginxConfigParser parser;
         NginxConfig config;
         session *session_;
+        Request request_;
+        std::vector<char> data;
+        size_t bytes_transferred;
 
 };
+
+void extract_from_file(const char *file_name, std::vector<char> &data, size_t &bytes_transferred)
+{
+  std::ifstream request_file(file_name);
+  char c;
+  
+  if (request_file.is_open())
+  {
+    while (request_file.good())
+    {
+      request_file.get(c);
+      data.push_back(c);
+      if (c == '\n')
+      {
+        data.insert(data.end() - 1, '\r');
+      }
+    }
+  }
+  
+  request_file.close();
+}
 
 TEST_F(SessionTest, async_readtest) 
 {
@@ -85,3 +113,59 @@ TEST_F(SessionTest, get_sockettest)
     session_->get_socket();
     EXPECT_TRUE(true);
 }
+
+TEST_F(SessionTest, good_purge_uri)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  reset();
+  bool match = request_.uri.empty();    
+  EXPECT_TRUE(match);
+}
+
+TEST_F(SessionTest, good_purge_request_headers)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  reset();
+  bool match = request_.request_headers.empty();
+  EXPECT_TRUE(match);
+}
+
+TEST_F(SessionTest, good_purge_request_body)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  reset();
+  bool match = request_.request_body.empty();
+  EXPECT_TRUE(match);
+}
+
+TEST_F(SessionTest, good_purge_headers)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  reset();
+  bool match = request_.headers.empty();
+  EXPECT_TRUE(match);
+}
+
+TEST_F(SessionTest, good_purge_headers_map)
+{
+  std::vector<char> response_data, response;
+  size_t r_bytes_transferred;
+  extract_from_file("request_handler_tests/good_request", data, bytes_transferred);
+  extract_from_file("request_handler_tests/good_request_response", response_data, r_bytes_transferred);
+  reset();
+  bool match = request_.headers_map.empty();
+  EXPECT_TRUE(match);
+}
+

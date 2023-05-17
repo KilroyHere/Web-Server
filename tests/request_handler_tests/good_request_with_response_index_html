@@ -1,58 +1,374 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>World Clock</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Minesweeper</title>
+    <meta name="description" content="" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <style>
-      body {
-        font-family: Arial, sans-serif;
+      @import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap");
+      h1 {
+        text-align: center;
+        font-family: "Rubik Mono One", sans-serif;
+        color: #ff9191;
+        text-shadow: 4px 4px black;
+        margin-bottom: 0;
+        margin-top: 10px;
+      }
+
+      button {
+        font-size: x-large;
+        font-family: "Rubik Mono One", sans-serif;
+        background-color: beige;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+        margin-bottom: 10 px;
+        border-radius: 5px;
+        box-shadow: 3px 3px black;
+      }
+
+      button:active {
+        margin-top: 8px;
+        box-shadow: 0px 0px;
+      }
+
+      button:hover {
+        background-color: rgb(255, 255, 161);
+      }
+
+      @keyframes blinking {
+        0% {
+          opacity: 0;
+        }
+        25% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .leftContainer {
+        width: 20%;
+        text-align: center;
+        padding-top: 5%;
+      }
+
+      .canvasContainer {
+        margin: 0 auto;
+      }
+
+      .rightContainer {
+        width: 20%;
+      }
+
+      .flexContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+
+      .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+  /*supported by Chrome, Edge, Opera and Firefox */
+      }
+      .titleContainer {
         text-align: center;
       }
-      
-      h1 {
-        margin-top: 50px;
-        margin-bottom: 30px;
-        font-size: 36px;
+
+      #gameCanvas {
+        border-radius: 5px;
+        box-shadow: 5px 5px rgb(0, 0, 0);
+        display: inline;
+        margin: auto;
+        background-color: beige;
+        border-style: solid;
+        border-width: 3px;
       }
-      
-      p {
-        margin-bottom: 20px;
-        font-size: 24px;
-      }
-      
-      span {
-        font-weight: bold;
-        font-size: 32px;
+
+      #overText {
+        visibility: hidden;
+        animation: blinking 1.5s infinite;
+        text-align: center;
+        margin: 0;
+        font-family: "Rubik Mono One", sans-serif;
+        font-size: 2.5rem;
+        color: #ff9191;
+        text-shadow: 4px 4px black;
       }
     </style>
+  </head>
+
+  <body>
+    <h1 class="noselect">Minesweeper💣</h1>
+    <div class="flexContainer">
+      <div class="leftContainer noselect">
+        <button id="size">10*10</button>
+        <button id="size">15*15</button>
+        <button id="size">20*20</button>
+        <button id="size">30*30</button>
+      </div>
+      <div class="canvasContainer">
+        <p class="noselect" id="overText">GAME OVER!</p>
+        <canvas id="gameCanvas"></canvas>
+      </div>
+      <div class="rightContainer"></div>
+    </div>
+
     <script>
-      function updateTime() {
-        // Get the current time
-        const now = new Date();
+      let gridLength = 20;
+      let grid;
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
 
-        // Set the timezone offsets for the cities
-        const newYorkOffset = -4;
-        const londonOffset = 1;
-        const tokyoOffset = 9;
+      const cellSize = 35;
+      let canvasWidth, canvasHeight;
 
-        // Calculate the time in each city based on the current time and timezone offset
-        const newYorkTime = new Date(now.getTime() + (newYorkOffset * 60 * 60 * 1000));
-        const londonTime = new Date(now.getTime() + (londonOffset * 60 * 60 * 1000));
-        const tokyoTime = new Date(now.getTime() + (tokyoOffset * 60 * 60 * 1000));
+      class Grid {
+        constructor(length) {
+          this.length = length;
+          this.cellArray = new Array(length);
+          this.setCanvas();
+          this.createCellArray();
+          this.setCellText();
+        }
 
-        // Display the time in each city
-        document.getElementById("new-york-time").textContent = newYorkTime.toLocaleTimeString();
-        document.getElementById("london-time").textContent = londonTime.toLocaleTimeString();
-        document.getElementById("tokyo-time").textContent = tokyoTime.toLocaleTimeString();
+        setCanvas() {
+          canvasWidth = canvasHeight = this.length * cellSize;
+          canvas.setAttribute("width", canvasWidth);
+          canvas.setAttribute("height", canvasHeight);
+        }
+
+        createCellArray() {
+          for (let i = 0; i < this.length; i++) {
+            this.cellArray[i] = new Array(length);
+          }
+          for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+              let isBombed = Math.random() < 0.14;
+              this.cellArray[i][j] = new Cell(
+                i * cellSize,
+                j * cellSize,
+                cellSize,
+                isBombed,
+                "closed"
+              );
+            }
+          }
+        }
+
+        setCellText() {
+          for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+              let cell = this.cellArray[i][j];
+              if (cell.isBombed) continue;
+              let text = 0;
+              if (i + 1 < this.length && this.cellArray[i + 1][j].isBombed)
+                text++;
+              if (j + 1 < this.length && this.cellArray[i][j + 1].isBombed)
+                text++;
+              if (
+                i + 1 < this.length &&
+                j + 1 < this.length &&
+                this.cellArray[i + 1][j + 1].isBombed
+              )
+                text++;
+              if (i - 1 > -1 && this.cellArray[i - 1][j].isBombed) text++;
+              if (j - 1 > -1 && this.cellArray[i][j - 1].isBombed) text++;
+              if (
+                i - 1 > -1 &&
+                j - 1 > -1 &&
+                this.cellArray[i - 1][j - 1].isBombed
+              )
+                text++;
+              if (
+                i + 1 < this.length &&
+                j - 1 > -1 &&
+                this.cellArray[i + 1][j - 1].isBombed
+              )
+                text++;
+              if (
+                i - 1 > -1 &&
+                j + 1 < this.length &&
+                this.cellArray[i - 1][j + 1].isBombed
+              )
+                text++;
+              cell.setText(text);
+            }
+          }
+        }
+
+        drawGrid(state = "continue") {
+          for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+              let cell = this.cellArray[i][j];
+              cell.state = state === "gameOver" ? "open" : cell.state;
+              cell.drawCell();
+            }
+          }
+        }
+
+        clickCell(x, y) {
+          let cellRowIndex = Math.floor(x / cellSize);
+          let cellColumnIndex = Math.floor(y / cellSize);
+          cellRowIndex =
+            cellRowIndex > this.length - 1 ? this.length - 1 : cellRowIndex;
+          cellColumnIndex =
+            cellColumnIndex > this.length - 1
+              ? this.length - 1
+              : cellColumnIndex;
+          if (
+            this.cellArray[cellRowIndex][cellColumnIndex].state === "closed"
+          ) {
+            if (this.cellArray[cellRowIndex][cellColumnIndex].isBombed) {
+              gameOver();
+              this.drawGrid("gameOver");
+              return;
+            }
+            this.floodFill(cellRowIndex, cellColumnIndex);
+          }
+          this.drawGrid();
+        }
+
+        flagCell(x, y) {
+          let cellRowIndex = Math.floor(x / cellSize);
+          let cellColumnIndex = Math.floor(y / cellSize);
+          if (this.cellArray[cellRowIndex][cellColumnIndex].state === "closed")
+            this.cellArray[cellRowIndex][cellColumnIndex].state = "flagged";
+          else if (
+            this.cellArray[cellRowIndex][cellColumnIndex].state === "flagged"
+          )
+            this.cellArray[cellRowIndex][cellColumnIndex].state = "closed";
+          this.drawGrid();
+        }
+
+        floodFill(r, c) {
+          if (r >= this.length || r < 0) {
+            return;
+          }
+          if (c >= this.length || c < 0) {
+            return;
+          }
+          if (
+            this.cellArray[r][c].state === "open" ||
+            this.cellArray[r][c].state === "flagged"
+          ) {
+            return;
+          }
+          if (this.cellArray[r][c].text > 0) {
+            this.cellArray[r][c].state = "open";
+            return;
+          }
+
+          this.cellArray[r][c].state = "open";
+
+          this.floodFill(r + 1, c);
+          this.floodFill(r, c + 1);
+          this.floodFill(r - 1, c);
+          this.floodFill(r, c - 1);
+        }
       }
 
-      // Update the time every second
-      setInterval(updateTime, 1000);
+      class Cell {
+        constructor(posX, posY, size, bombed, state) {
+          this.posX = posX;
+          this.posY = posY;
+          this.size = size;
+          this.endX = posX + size;
+          this.endY = posY + size;
+          this.isBombed = bombed;
+          this.state = state;
+          this.text = this.isBombed ? "-2" : "0";
+        }
+
+        setText(text) {
+          this.text = text;
+        }
+
+        drawCell() {
+          //Filled Rectangle
+          let color = this.state === "open" ? "#ffea63" : "#feffd4";
+          color = this.isBombed && this.state === "open" ? "#ff7a6e" : color;
+          ctx.fillStyle = color;
+          ctx.fillRect(this.posX, this.posY, this.size, this.size);
+
+          //Rectangle Border
+          ctx.fillStyle = "black";
+          ctx.strokeRect(this.posX, this.posY, this.size, this.size);
+
+          //Filling Text
+          let colorArray = [
+            "#00B3E6",
+            "#00E680",
+            "#B34D4D",
+            "#CC80CC",
+            "#1AB399",
+            "#CC9999",
+            "#00E680",
+            "#99E6E6",
+            "#6666FF",
+          ];
+          if (this.state === "open" || this.state === "flagged") {
+            ctx.fillStyle = colorArray[Math.abs(this.text)];
+            ctx.font = "20px Rubik Mono One";
+            ctx.textAlign = "center";
+            let text;
+            if (this.state === "open" && this.isBombed) text = "💣";
+            else if (this.state === "flagged") text = "🚩";
+            else text = this.text;
+            if (this.text !== 0) {
+              ctx.fillText(text, this.posX + 18, this.posY + 25);
+            }
+          }
+        }
+      }
+
+      function newGame(length) {
+        let gameOverText = document.querySelector("#overText");
+        gameOverText.style.visibility = "hidden";
+        grid = new Grid(length);
+        grid.drawGrid();
+      }
+
+      newGame(gridLength);
+
+      function gameOver() {
+        let gameOverText = document.querySelector("#overText");
+        gameOverText.style.visibility = "visible";
+      }
+
+      canvas.addEventListener("click", function (event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        grid.clickCell(x, y);
+      });
+
+      canvas.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        grid.flagCell(x, y);
+      });
+
+      for (let i = 0; i < 4; i++) {
+        document
+          .querySelectorAll("#size")
+          [i].addEventListener("click", function (key) {
+            let length = Number(key.target.innerText.slice(0, 2));
+            newGame(length);
+          });
+      }
     </script>
-  </head>
-  <body>
-    <h1>World Clock</h1>
-    <p>New York: <span id="new-york-time"></span></p>
-    <p>London: <span id="london-time"></span></p>
-    <p>Tokyo: <span id="tokyo-time"></span></p>
   </body>
 </html>
