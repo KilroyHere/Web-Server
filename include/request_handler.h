@@ -58,4 +58,15 @@ public:
   bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
 };
 
+class CrudRequestHandler : public RequestHandler
+{
+public:
+  CrudRequestHandler(const std::string &request_uri, NginxConfig &config);
+  // Keeps the response body empty and sets status to not found.
+  bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
+private:
+  NginxConfig config_;
+  std::string data_path;
+};
+
 #endif // REQUEST_HANDLER_H

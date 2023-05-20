@@ -341,3 +341,14 @@ TEST_F(RequestHandlerTest, empty_path_uri_request_404)
   EXPECT_TRUE(res.body() == "");
   EXPECT_TRUE(res.result() == http::status::not_found);
 }
+
+TEST_F(RequestHandlerTest, crud_handler_basic)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  // TODO: Test actual CRUD functionality once implemented
+  EXPECT_TRUE(res.result() == http::status::ok);
+}

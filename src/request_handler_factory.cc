@@ -83,6 +83,11 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating EchoRequestHandler";
     return std::make_unique<EchoRequestHandler>(new_request_uri, parsed_config);
   }
+  else if (handler == "CrudRequestHandler")
+  {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating CrudRequestHandler";
+    return std::make_unique<CrudRequestHandler>(new_request_uri, parsed_config);
+  }
   else if (handler == "StaticRequestHandler")
   {
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating StaticRequestHandler";

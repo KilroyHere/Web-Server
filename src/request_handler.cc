@@ -8,6 +8,8 @@ BadRequestHandler::BadRequestHandler(const std::string &request_uri, NginxConfig
 
 NotFoundRequestHandler::NotFoundRequestHandler(const std::string &request_uri, NginxConfig &config) {}
 
+CrudRequestHandler::CrudRequestHandler(const std::string &request_uri, NginxConfig &config) : config_(config), data_path(request_uri) {}
+
 bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   std::ostringstream oss;
@@ -69,6 +71,17 @@ bool NotFoundRequestHandler::handle_request(const http::request<http::string_bod
 {
   http_response->result(http::status::not_found);
   http_response->body() = "";
+  http_response->prepare_payload();
+  return true;
+}
+
+bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+{
+  // TODO: Implement actual CRUD functionality
+  http_response->result(http::status::ok);
+  http_response->version(http_request.version());
+  http_response->body() = "CRUD Handler Skeleton";
+  http_response->set(http::field::content_type, "text/plain");
   http_response->prepare_payload();
   return true;
 }
