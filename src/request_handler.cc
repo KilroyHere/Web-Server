@@ -75,13 +75,100 @@ bool NotFoundRequestHandler::handle_request(const http::request<http::string_bod
   return true;
 }
 
-bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
 {
-  // TODO: Implement actual CRUD functionality
-  http_response->result(http::status::ok);
-  http_response->version(http_request.version());
-  http_response->body() = "CRUD Handler Skeleton";
-  http_response->set(http::field::content_type, "text/plain");
-  http_response->prepare_payload();
-  return true;
+  if (http_request.method() == http::verb::post) 
+  { // POST method
+    // Get the next available id
+    boost::filesystem::path path(data_path);
+
+    // Create data_path directory if it doesn't already exist
+    if (!boost::filesystem::exists(path))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Creating data_path directory: " << data_path;
+      boost::filesystem::create_directories(path);
+    }
+
+    int id = 1;
+    while (boost::filesystem::exists(path / std::to_string(id)))
+    {
+      id++;
+    }
+
+    // Write data to file
+    std::ofstream file((path / std::to_string(id)).string(), std::ios::out | std::ios::binary);
+    if (file.fail())
+    {
+      BOOST_LOG_TRIVIAL(error) << "Couldn't open file";
+      http_response->result(http::status::internal_server_error);
+      return true;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Writing POST to file:" << (path / std::to_string(id)).string();
+
+    file << http_request.body();
+    file.close();
+
+    // Respond with the new id
+    http_response->result(http::status::created);
+    http_response->version(http_request.version());
+    http_response->body() = "{\"id\": " + std::to_string(id) + "}";
+    http_response->set(http::field::content_type, "application/json");
+    http_response->prepare_payload();
+
+    return true;
+
+  } 
+  else if (http_request.method() == http::verb::get) // GET method
+  {
+    std::string target = http_request.target().to_string();
+    
+    int id;
+    try 
+    {
+        // Extract the id from the target
+        std::string id_str = target.substr(target.find_last_of("/") + 1);
+        id = std::stoi(id_str);
+    }
+    catch (std::invalid_argument& e)
+    {
+        BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+        http_response->result(http::status::bad_request);
+        http_response->body() = "400: Bad Request. The ID is invalid.";
+        http_response->prepare_payload();
+        return true;
+    }
+
+    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));    
+    std::ifstream file(path, std::ios::in | std::ios::binary);
+    if (file.fail()) 
+    {
+      BOOST_LOG_TRIVIAL(warning) << "Attempted to GET ID that does not exist: " << std::to_string(id);
+      http_response->result(http::status::not_found);
+      http_response->body() = "404 Not Found: The ID does not exist.";
+      http_response->prepare_payload();
+      return true;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Reading for GET from file:" << path.string();
+    std::string body = "";
+
+    char c;
+    while (file.get(c)) body += c;
+    file.close();
+
+    http_response->result(http::status::ok);
+    http_response->version(http_request.version());
+    http_response->body() = body;
+    http_response->set(http::field::content_type, "application/json");
+    http_response->prepare_payload();
+    return true;
+
+  } 
+  else
+  {
+    BOOST_LOG_TRIVIAL(info) << "Client used unsupported HTTP Verb: " << http_request.method_string();
+    http_response->result(http::status::method_not_allowed);
+    return true;
+  }
 }

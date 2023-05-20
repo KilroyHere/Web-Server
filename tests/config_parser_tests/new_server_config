@@ -16,5 +16,5 @@ location /static2 StaticRequestHandler {
 }
 
 location /api CrudRequestHandler {
-  root ./folder3; # supports relative paths
+  root ./folder4; # supports relative paths
 }

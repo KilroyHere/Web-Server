@@ -19,6 +19,11 @@ protected:
     bool success = parser.Parse("config_parser_tests/new_server_config", &out_config);
     assert(success == true);
   }
+  void TearDown() override
+  {
+    boost::filesystem::path dir_to_remove("../folder4");
+    boost::filesystem::remove_all(dir_to_remove);
+  }
   NginxConfigParser parser;
   NginxConfig out_config;
 };
@@ -342,13 +347,68 @@ TEST_F(RequestHandlerTest, empty_path_uri_request_404)
   EXPECT_TRUE(res.result() == http::status::not_found);
 }
 
-TEST_F(RequestHandlerTest, crud_handler_basic)
+// These must be combined so that the data_path is not reset between tests
+TEST_F(RequestHandlerTest, valid_crud_post_get)
 {
   RequestHandlerFactory nhf(out_config);
-  http::request<http::string_body> req{http::verb::get, "/api", 10};
+  http::request<http::string_body> req_1{http::verb::post, "/api/Shoes", 10};
+  req_1.body() = "{\"name\": \"Shoe Name\", \"size\": 10}";
+  
+  std::unique_ptr<RequestHandler> handler_1 = nhf.createHandler(&req_1);
+  http::response<http::string_body> res_1;
+  handler_1->handle_request(req_1, &res_1);
+  
+  EXPECT_TRUE(res_1.body() == "{\"id\": 1}");
+  EXPECT_TRUE(res_1.result() == http::status::created);
+
+  http::request<http::string_body> req_2{http::verb::get, "/api/Shoes/1", 10};
+  std::unique_ptr<RequestHandler> handler_2 = nhf.createHandler(&req_2);
+  http::response<http::string_body> res_2;
+  handler_2->handle_request(req_2, &res_2);
+  
+  // The returned body should be same as the one in the POST request test above
+  EXPECT_TRUE(res_2.body() == "{\"name\": \"Shoe Name\", \"size\": 10}");
+  EXPECT_TRUE(res_2.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_get)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api/Shoes/invalid_id", 10};
+  
   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
   http::response<http::string_body> res;
   handler->handle_request(req, &res);
-  // TODO: Test actual CRUD functionality once implemented
-  EXPECT_TRUE(res.result() == http::status::ok);
+  
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, not_found_crud_get)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api/Shoes/2", 10};
+  
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  std::cout << res.body() << std::endl;
+  
+  EXPECT_TRUE(res.body() == "404 Not Found: The ID does not exist.");
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_verb)
+{
+  RequestHandlerFactory nhf(out_config);
+
+  // We do not support the CONNECT Verb
+  http::request<http::string_body> req{http::verb::connect, "/api/Shoes/2", 10};
+  
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  std::cout << res.body() << std::endl;
+  
+  EXPECT_TRUE(res.result() == http::status::method_not_allowed);
 }
