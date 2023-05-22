@@ -220,6 +220,61 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
 
     return true;
   }
+  else if (http_request.method() == http::verb::delete_) 
+  { // DELETE method
+    // Get full file path
+    std::string target = http_request.target().to_string();
+    
+    int id;
+    try 
+    {
+        // Extract the id from the target
+        std::string id_str = target.substr(target.find_last_of("/") + 1);
+        id = std::stoi(id_str);
+    }
+    catch (std::invalid_argument& e)
+    {
+        BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+        http_response->result(http::status::bad_request);
+        http_response->body() = "400: Bad Request. The ID is invalid.";
+        http_response->prepare_payload();
+        return true;
+    }
+
+    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));    
+
+    // Decided on 204 HTTP error for attempting to delete non-existent or already deleted files.
+    if (!boost::filesystem::exists(path))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Attempted to DELETE a file " << path.string() << " that does not exist";
+      http_response->result(http::status::no_content);
+      //the no content response does not accept an http body
+      http_response->body() = "";
+      http_response->prepare_payload();
+      return true;
+    }
+
+    // Delete file
+    BOOST_LOG_TRIVIAL(info) << "Deleting file " << path.string();
+    boost::system::error_code del_ec;
+    boost::filesystem::remove_all(path, del_ec);
+    if(del_ec)
+    {
+      BOOST_LOG_TRIVIAL(error) << "Couldn't delete file";
+      http_response->result(http::status::internal_server_error);
+      return true;
+    }
+
+    // Respond with success message if file successfully deleted 
+    http_response->result(http::status::ok);
+    http_response->version(http_request.version());
+    http_response->body() = "File " + target + " deleted successfully.";
+    http_response->set(http::field::content_type, "text/HTML");
+    http_response->prepare_payload();
+
+    return true;
+
+  }
   else
   {
     BOOST_LOG_TRIVIAL(info) << "Client used unsupported HTTP Verb: " << http_request.method_string();

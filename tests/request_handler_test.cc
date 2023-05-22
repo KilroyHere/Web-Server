@@ -398,6 +398,56 @@ TEST_F(RequestHandlerTest, not_found_crud_get)
 	EXPECT_TRUE(res.result() == http::status::not_found);
 }
 
+TEST_F(RequestHandlerTest, bad_crud_delete)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::delete_, "/api/Shoes/invalid_id", 10};
+  
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, crud_no_content)
+{
+  RequestHandlerFactory nhf(out_config);
+  //request with valid id that will never exist
+  http::request<http::string_body> req{http::verb::delete_, "/api/Shoes/-1", 10};
+  
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(res.body().empty());
+  EXPECT_TRUE(res.result() == http::status::no_content);
+}
+
+TEST_F(RequestHandlerTest, crud_delete_success)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req_1{http::verb::post, "/api/Shoes", 10};
+  req_1.body() = "{\"name\": \"Shoe Name\", \"size\": 10}";
+  
+  std::unique_ptr<RequestHandler> handler_1 = nhf.createHandler(&req_1);
+  http::response<http::string_body> res_1;
+  handler_1->handle_request(req_1, &res_1);
+  
+  EXPECT_TRUE(res_1.body() == "{\"id\": 1}");
+  EXPECT_TRUE(res_1.result() == http::status::created);
+
+  http::request<http::string_body> req_2{http::verb::delete_, "/api/Shoes/1", 10};
+  std::unique_ptr<RequestHandler> handler_2 = nhf.createHandler(&req_2);
+  http::response<http::string_body> res_2;
+  handler_2->handle_request(req_2, &res_2);
+  
+  // The returned body should be same as the one in the POST request test above
+  EXPECT_TRUE(res_2.body() == "File " + req_2.target().to_string() + " deleted successfully.");
+  EXPECT_TRUE(res_2.result() == http::status::ok);
+}
+
 TEST_F(RequestHandlerTest, bad_crud_verb)
 {
 	RequestHandlerFactory nhf(out_config);
