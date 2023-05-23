@@ -75,9 +75,9 @@ bool NotFoundRequestHandler::handle_request(const http::request<http::string_bod
   return true;
 }
 
-bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
+bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
-  if (http_request.method() == http::verb::post) 
+  if (http_request.method() == http::verb::post)
   { // POST method
     // Get the next available id
     boost::filesystem::path path(data_path);
@@ -117,31 +117,30 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     http_response->prepare_payload();
 
     return true;
-
-  } 
+  }
   else if (http_request.method() == http::verb::get) // GET method
   {
     std::string target = http_request.target().to_string();
-    
+
     int id;
-    try 
+    try
     {
-        // Extract the id from the target
-        std::string id_str = target.substr(target.find_last_of("/") + 1);
-        id = std::stoi(id_str);
+      // Extract the id from the target
+      std::string id_str = target.substr(target.find_last_of("/") + 1);
+      id = std::stoi(id_str);
     }
-    catch (std::invalid_argument& e)
+    catch (std::invalid_argument &e)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
-        http_response->result(http::status::bad_request);
-        http_response->body() = "400: Bad Request. The ID is invalid.";
-        http_response->prepare_payload();
-        return true;
+      BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+      http_response->result(http::status::bad_request);
+      http_response->body() = "400: Bad Request. The ID is invalid.";
+      http_response->prepare_payload();
+      return true;
     }
 
-    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));    
+    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
     std::ifstream file(path, std::ios::in | std::ios::binary);
-    if (file.fail()) 
+    if (file.fail())
     {
       BOOST_LOG_TRIVIAL(warning) << "Attempted to GET ID that does not exist: " << std::to_string(id);
       http_response->result(http::status::not_found);
@@ -154,7 +153,8 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     std::string body = "";
 
     char c;
-    while (file.get(c)) body += c;
+    while (file.get(c))
+      body += c;
     file.close();
 
     http_response->result(http::status::ok);
@@ -163,8 +163,63 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     http_response->set(http::field::content_type, "application/json");
     http_response->prepare_payload();
     return true;
+  }
+  else if (http_request.method() == http::verb::put)
+  { // PUT method
+    std::string target = http_request.target().to_string();
 
-  } 
+    int id;
+    try
+    {
+      // Extract the id from the target
+      std::string id_str = target.substr(target.find_last_of("/") + 1);
+      id = std::stoi(id_str);
+    }
+    catch (std::invalid_argument &e)
+    {
+      BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+      http_response->result(http::status::bad_request);
+      http_response->body() = "400: Bad Request. The ID is invalid.";
+      http_response->prepare_payload();
+      return true;
+    }
+
+    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
+    boost::filesystem::path dir = path.parent_path();
+
+    http::status status = http::status::no_content;
+
+    if (!boost::filesystem::exists(path))
+    {
+      BOOST_LOG_TRIVIAL(info) << "File being PUT will be created";
+      status = http::status::created;
+    }
+
+    if (!boost::filesystem::exists(dir))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Creating data_path directory: " << data_path;
+      boost::filesystem::create_directories(dir);
+    }
+
+    std::ofstream file(path, std::ios::out | std::ios::binary | std::ios::trunc);
+    if (file.fail())
+    {
+      BOOST_LOG_TRIVIAL(error) << "Couldn't open file";
+      http_response->result(http::status::internal_server_error);
+      return true;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Writing PUT to file:" << path;
+
+    file << http_request.body();
+    file.close();
+
+    http_response->result(status);
+    http_response->version(http_request.version());
+    http_response->prepare_payload();
+
+    return true;
+  }
   else
   {
     BOOST_LOG_TRIVIAL(info) << "Client used unsupported HTTP Verb: " << http_request.method_string();

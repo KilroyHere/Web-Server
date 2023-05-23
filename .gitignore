@@ -4,3 +4,5 @@ build
 build_*
 mirror
 logs
+.idea*
+cmake-build-debug*
