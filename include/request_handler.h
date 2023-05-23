@@ -11,6 +11,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/http/status.hpp>
+#include <regex>
 
 namespace beast = boost::beast;
 namespace http = beast::http;

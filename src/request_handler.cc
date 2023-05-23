@@ -121,47 +121,88 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
   else if (http_request.method() == http::verb::get) // GET method
   {
     std::string target = http_request.target().to_string();
+    std::regex regex_expr("[0-9]+");
+    std::string id_str = target.substr(target.find_last_of("/") + 1);
+    if (std::regex_match(id_str, regex_expr))
+    {
+      BOOST_LOG_TRIVIAL(info) << "Returning single json object in GET request";
+      int id;
+      try
+      {
+        // Extract the id from the target
+        std::string id_str = target.substr(target.find_last_of("/") + 1);
+        id = std::stoi(id_str);
+      }
+      catch (std::invalid_argument &e)
+      {
+        BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+        http_response->result(http::status::bad_request);
+        http_response->body() = "400: Bad Request. The ID is invalid.";
+        http_response->prepare_payload();
+        return true;
+      }
 
-    int id;
-    try
-    {
-      // Extract the id from the target
-      std::string id_str = target.substr(target.find_last_of("/") + 1);
-      id = std::stoi(id_str);
-    }
-    catch (std::invalid_argument &e)
-    {
-      BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
-      http_response->result(http::status::bad_request);
-      http_response->body() = "400: Bad Request. The ID is invalid.";
+      boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
+      std::ifstream file(path, std::ios::in | std::ios::binary);
+      if (file.fail())
+      {
+        BOOST_LOG_TRIVIAL(warning) << "Attempted to GET ID that does not exist: " << std::to_string(id);
+        http_response->result(http::status::not_found);
+        http_response->body() = "404 Not Found: The ID does not exist.";
+        http_response->prepare_payload();
+        return true;
+      }
+      BOOST_LOG_TRIVIAL(info) << "Reading for GET from file:" << path.string();
+      std::string body = "";
+
+      char c;
+      while (file.get(c))
+        body += c;
+      file.close();
+
+      http_response->result(http::status::ok);
+      http_response->version(http_request.version());
+      http_response->body() = body;
+      http_response->set(http::field::content_type, "application/json");
       http_response->prepare_payload();
-      return true;
     }
-
-    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
-    std::ifstream file(path, std::ios::in | std::ios::binary);
-    if (file.fail())
+    else
     {
-      BOOST_LOG_TRIVIAL(warning) << "Attempted to GET ID that does not exist: " << std::to_string(id);
-      http_response->result(http::status::not_found);
-      http_response->body() = "404 Not Found: The ID does not exist.";
+      BOOST_LOG_TRIVIAL(info) << "Returning list in GET request";
+      std::string body = "[";
+
+      boost::filesystem::path path(data_path);
+      if (!boost::filesystem::exists(path))
+      {
+        BOOST_LOG_TRIVIAL(warning) << "Attempted to GET directory that does not exist: " << data_path;
+        http_response->result(http::status::not_found);
+        http_response->body() = "404 Not Found: The directory does not exist.";
+        http_response->prepare_payload();
+        return true;
+      }
+      boost::filesystem::directory_iterator it(path);
+      boost::filesystem::path file_path;
+      while (it != boost::filesystem::directory_iterator{})
+      {
+        file_path = it->path();
+        BOOST_LOG_TRIVIAL(info) << "Adding file: " << file_path.string() << " to list of files";
+        if (boost::filesystem::is_regular_file(file_path))
+        {
+          target = file_path.string();
+          std::string id_str = target.substr(target.find_last_of("/") + 1);
+          body += id_str + ",";
+        }
+        it++;
+      }
+      body.pop_back();
+      body += "]";
+
+      http_response->result(http::status::ok);
+      http_response->version(http_request.version());
+      http_response->body() = body;
+      http_response->set(http::field::content_type, "application/json");
       http_response->prepare_payload();
-      return true;
     }
-
-    BOOST_LOG_TRIVIAL(info) << "Reading for GET from file:" << path.string();
-    std::string body = "";
-
-    char c;
-    while (file.get(c))
-      body += c;
-    file.close();
-
-    http_response->result(http::status::ok);
-    http_response->version(http_request.version());
-    http_response->body() = body;
-    http_response->set(http::field::content_type, "application/json");
-    http_response->prepare_payload();
     return true;
   }
   else if (http_request.method() == http::verb::put)
@@ -220,35 +261,35 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
 
     return true;
   }
-  else if (http_request.method() == http::verb::delete_) 
+  else if (http_request.method() == http::verb::delete_)
   { // DELETE method
     // Get full file path
     std::string target = http_request.target().to_string();
-    
+
     int id;
-    try 
+    try
     {
-        // Extract the id from the target
-        std::string id_str = target.substr(target.find_last_of("/") + 1);
-        id = std::stoi(id_str);
+      // Extract the id from the target
+      std::string id_str = target.substr(target.find_last_of("/") + 1);
+      id = std::stoi(id_str);
     }
-    catch (std::invalid_argument& e)
+    catch (std::invalid_argument &e)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
-        http_response->result(http::status::bad_request);
-        http_response->body() = "400: Bad Request. The ID is invalid.";
-        http_response->prepare_payload();
-        return true;
+      BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid ID: " << target;
+      http_response->result(http::status::bad_request);
+      http_response->body() = "400: Bad Request. The ID is invalid.";
+      http_response->prepare_payload();
+      return true;
     }
 
-    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));    
+    boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
 
     // Decided on 204 HTTP error for attempting to delete non-existent or already deleted files.
     if (!boost::filesystem::exists(path))
     {
       BOOST_LOG_TRIVIAL(info) << "Attempted to DELETE a file " << path.string() << " that does not exist";
       http_response->result(http::status::no_content);
-      //the no content response does not accept an http body
+      // the no content response does not accept an http body
       http_response->body() = "";
       http_response->prepare_payload();
       return true;
@@ -258,14 +299,14 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     BOOST_LOG_TRIVIAL(info) << "Deleting file " << path.string();
     boost::system::error_code del_ec;
     boost::filesystem::remove_all(path, del_ec);
-    if(del_ec)
+    if (del_ec)
     {
       BOOST_LOG_TRIVIAL(error) << "Couldn't delete file";
       http_response->result(http::status::internal_server_error);
       return true;
     }
 
-    // Respond with success message if file successfully deleted 
+    // Respond with success message if file successfully deleted
     http_response->result(http::status::ok);
     http_response->version(http_request.version());
     http_response->body() = "File " + target + " deleted successfully.";
@@ -273,7 +314,6 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     http_response->prepare_payload();
 
     return true;
-
   }
   else
   {
