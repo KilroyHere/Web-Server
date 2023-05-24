@@ -65,16 +65,16 @@ gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOUR
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
+if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
+    add_test(NAME web_test
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
+    )
+endif()
+
 # Generate Unit Test Coverage Report 
  include(cmake/CodeCoverageReportConfig.cmake)
  generate_coverage_report(
     TARGETS config_parser_lib session_lib http_request_lib http_server_lib request_handler_lib request_parser_lib request_handler_factory_lib
     TESTS config_parser_test request_handler_test request_parser_test session_test
 )
-
-# if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
-#     add_test(NAME web_test
-#         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/test.sh
-#         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
-#     )
-# endif()
