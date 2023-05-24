@@ -1,9 +1,13 @@
 #!/bin/bash
 
-finalExit=0
 
-#MUST BE RUN FROM MAIN REPO DIR 
+#=============================
+# MUST BE RUN FROM MAIN REPO DIR 
 #   (must run the tests in the root directory of the project to simulate the prod environment)
+#=============================
+
+#exit code of test (0 if all pass, 1 if not)
+finalExit=0
 
 #========TEST CREATING FILE WITH POST=============
 post_call() { 
@@ -64,6 +68,41 @@ put_call() {
     fi
 }
 
+#=============TEST GET JSON LIST OF IDS=================
+
+get_list_call () {
+    touch get_list.json
+
+    curl localhost:$1/api/int_test -o get_list.json -s
+    get_json_list=$(python3 -c "import sys, json; f = open('get_list.json',); arr = json.load(f); [print(i) for i in arr]")
+    readarray myarray < <(echo "${get_json_list[@]}")
+    length=$(echo "${#myarray[@]}")
+    files_in_dir=$(ls -1 ../folder4/int_test | wc -l)
+
+    for i in $get_json_list
+    do
+        if test -f ../folder4/int_test/$i; then
+            continue
+        else
+            finalExit=1
+            echo "Unsuccessful GET (list returned included non-existent ID)"
+            return
+        fi
+    done
+
+    if [ "$files_in_dir" == "$length" ]
+    then
+        echo "Successful GET (list)"
+    else
+        finalExit=1
+        echo "Unsuccessful GET (list returned different number of IDs than directory contains)"
+    fi
+
+}
+
+
+#=============TEST DELETING FILE WITH DELETE============
+
 delete_call() {
     
     touch delete.txt
@@ -92,7 +131,7 @@ delete_call() {
 
 
 clean_up () {
-    rm listen.txt post.json test.json get.json put.json delete.txt delete_test.txt
+    rm listen.txt post.json test.json get.json put.json delete.txt delete_test.txt get_list.json
     rm -r ../folder4/int_test
 }
 
@@ -110,6 +149,8 @@ post_call "$PORTVALUE"
 get_call "$PORTVALUE" "$post_json_id"
 
 put_call "$PORTVALUE" "$post_json_id"
+
+get_list_call "$PORTVALUE"
 
 delete_call "$PORTVALUE" "$post_json_id"
 
