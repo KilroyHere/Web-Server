@@ -14,3 +14,6 @@ location /static1 StaticRequestHandler {
 location /static2 StaticRequestHandler {
   root ./folder3; # supports relative paths
 }
+
+location /health HealthRequestHandler {
+}

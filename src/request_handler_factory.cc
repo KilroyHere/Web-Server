@@ -52,7 +52,8 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
 {
 
   // If given a invalid or malformed http_request, session would send a nullptr to indicate a bad request.
-  if (http_request == nullptr) {
+  if (http_request == nullptr)
+  {
     return std::make_unique<BadRequestHandler>(std::string(""), parsed_config);
   }
 
@@ -92,6 +93,11 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
   {
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating StaticRequestHandler";
     return std::make_unique<StaticRequestHandler>(new_request_uri, parsed_config);
+  }
+  else if (handler == "HealthRequestHandler")
+  {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating HealthRequestHandler";
+    return std::make_unique<HealthRequestHandler>(new_request_uri, parsed_config);
   }
   else
   {

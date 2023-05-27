@@ -567,3 +567,16 @@ TEST_F(RequestHandlerTest, valid_crud_get_multiple_items_from_directory)
     EXPECT_TRUE(filenames_set.find(item) != filenames_set.end());
   }
 }
+
+TEST_F(RequestHandlerTest, good_health_request)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/health", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  std::ostringstream oss;
+  oss << "OK";
+  EXPECT_TRUE(res.body() == oss.str());
+  EXPECT_TRUE(res.result() == http::status::ok);
+}

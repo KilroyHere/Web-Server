@@ -10,6 +10,8 @@ NotFoundRequestHandler::NotFoundRequestHandler(const std::string &request_uri, N
 
 CrudRequestHandler::CrudRequestHandler(const std::string &request_uri, NginxConfig &config) : config_(config), data_path(request_uri) {}
 
+HealthRequestHandler::HealthRequestHandler(const std::string &request_uri, NginxConfig &config) {}
+
 bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   std::ostringstream oss;
@@ -21,6 +23,7 @@ bool EchoRequestHandler::handle_request(const http::request<http::string_body> h
   http_response->prepare_payload();
   return true;
 }
+
 bool StaticRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   // read file contents
@@ -321,4 +324,16 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     http_response->result(http::status::method_not_allowed);
     return true;
   }
+}
+
+bool HealthRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+{
+  std::ostringstream oss;
+  oss << "OK";
+  http_response->result(http::status::ok);
+  http_response->version(http_request.version());
+  http_response->body() = oss.str();
+  http_response->set(http::field::content_type, "text/plain");
+  http_response->prepare_payload();
+  return true;
 }
