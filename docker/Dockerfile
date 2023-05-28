@@ -10,6 +10,8 @@ WORKDIR /usr/src/project/build
 RUN cmake ..
 RUN make
 RUN ctest --output-on_failure
+RUN mkdir ./mnt/storage/crud
+
 ### Deploy container ###
 # Define deploy stage
 FROM ubuntu:jammy as deploy

@@ -146,7 +146,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       }
 
       boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
-      std::ifstream file(path, std::ios::in | std::ios::binary);
+      std::ifstream file(path.string(), std::ios::in | std::ios::binary);
       if (file.fail())
       {
         BOOST_LOG_TRIVIAL(warning) << "Attempted to GET ID that does not exist: " << std::to_string(id);
@@ -245,7 +245,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       boost::filesystem::create_directories(dir);
     }
 
-    std::ofstream file(path, std::ios::out | std::ios::binary | std::ios::trunc);
+    std::ofstream file(path.string(), std::ios::out | std::ios::binary | std::ios::trunc);
     if (file.fail())
     {
       BOOST_LOG_TRIVIAL(error) << "Couldn't open file";
