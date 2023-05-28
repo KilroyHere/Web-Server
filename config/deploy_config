@@ -17,3 +17,7 @@ location /static2 StaticRequestHandler {
 
 location /health HealthRequestHandler {
 }
+
+location /api CrudRequestHandler {
+  root ./mnt/storage/crud; # supports relative paths
+}
