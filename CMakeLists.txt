@@ -72,6 +72,13 @@ if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
     )
 endif()
 
+if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Coverage")
+    add_test(NAME web_test2
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests/parallel_test.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_tests
+    )
+endif()
+
 # Generate Unit Test Coverage Report 
  include(cmake/CodeCoverageReportConfig.cmake)
  generate_coverage_report(

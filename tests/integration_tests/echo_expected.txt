@@ -1,0 +1,5 @@
+GET /echo HTTP/1.1
+accept: */*
+host: localhost
+user-agent: curl/7.81.0
+
