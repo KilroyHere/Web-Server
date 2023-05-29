@@ -12,6 +12,8 @@ CrudRequestHandler::CrudRequestHandler(const std::string &request_uri, NginxConf
 
 HealthRequestHandler::HealthRequestHandler(const std::string &request_uri, NginxConfig &config) {}
 
+SleepRequestHandler::SleepRequestHandler(const std::string &request_uri, NginxConfig &config) {}
+
 bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   std::ostringstream oss;
@@ -334,6 +336,17 @@ bool HealthRequestHandler::handle_request(const http::request<http::string_body>
   http_response->version(http_request.version());
   http_response->body() = oss.str();
   http_response->set(http::field::content_type, "text/plain");
+  http_response->prepare_payload();
+  return true;
+}
+
+bool SleepRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
+{
+  BOOST_LOG_TRIVIAL(info) << "sleeping for 10 seconds";
+  sleep(10);
+  BOOST_LOG_TRIVIAL(info) << "slept for 10 seconds";
+  http_response->result(http::status::ok);
+  http_response->body() = "";
   http_response->prepare_payload();
   return true;
 }

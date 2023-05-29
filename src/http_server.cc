@@ -2,8 +2,8 @@
 
 using boost::asio::ip::tcp;
 
-HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service)
-    : config_(config), io_service_(io_service), acceptor_(io_service)
+HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service, uint32_t thread_pool_size /* = 1*/)
+    : config_(config), io_service_(io_service), acceptor_(io_service), thread_pool_size_(thread_pool_size)
 {
 
   std::vector<std::string> query{"port"};
@@ -18,9 +18,27 @@ HTTPserver::HTTPserver(NginxConfig config, boost::asio::io_service &io_service)
     set_acceptor();
     BOOST_LOG_TRIVIAL(info) << "Server listening at Port: " << port_ << ".";
     start_accept();
-    io_service_.run();
+    run();
   }
 }
+
+
+void HTTPserver::run()
+{
+    // Create a pool of threads to run all of the io_services.
+    std::vector<boost::shared_ptr<boost::thread> > threads;
+    for (std::size_t i = 0; i < thread_pool_size_; ++i)
+    {
+    boost::shared_ptr<boost::thread> thread(new boost::thread(
+            boost::bind(&boost::asio::io_service::run, &io_service_)));
+    threads.push_back(thread);
+    }
+
+    // Wait for all threads in the pool to exit.
+    for (std::size_t i = 0; i < threads.size(); ++i)
+    threads[i]->join();
+}
+
 
 void HTTPserver::set_acceptor()
 {
@@ -38,11 +56,16 @@ void HTTPserver::start_accept()
                                      boost::asio::placeholders::error));
 }
 
+void HTTPserver::handle_read(session *new_session)
+{
+  new_session->async_read();
+}
+
 void HTTPserver::handle_accept(session *new_session, const boost::system::error_code &error)
 {
   if (!error)
   {
-    new_session->async_read();
+    handle_read(new_session);
   }
   else
   {

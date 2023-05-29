@@ -15,9 +15,12 @@ location /static2 StaticRequestHandler {
   root ./folder3; # supports relative paths
 }
 
+location /api CrudRequestHandler {
+  root ./mnt/storage/crud; # supports relative paths
+}
+
 location /health HealthRequestHandler {
 }
 
-location /api CrudRequestHandler {
-  root ./mnt/storage/crud; # supports relative paths
+location /sleep SleepRequestHandler {
 }

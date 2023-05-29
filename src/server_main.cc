@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     boost::asio::io_service io_service;
     BOOST_LOG_TRIVIAL(info) << "Trying to start the server.";
-    HTTPserver s(config, io_service);
+    auto server = HTTPserver(config, io_service, 12);
   }
   catch (std::exception &e)
   {

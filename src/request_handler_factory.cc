@@ -99,6 +99,11 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating HealthRequestHandler";
     return std::make_unique<HealthRequestHandler>(new_request_uri, parsed_config);
   }
+  else if (handler == "SleepRequestHandler")
+  {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating SleepRequestHandler";
+    return std::make_unique<SleepRequestHandler>(new_request_uri, parsed_config);
+  }
   else
   {
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating NotFoundRequestHandler";

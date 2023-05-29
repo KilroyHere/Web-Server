@@ -8,18 +8,22 @@
 #include <boost/log/trivial.hpp>
 #include "session.h"
 #include "config_parser.h"
+#include <boost/thread.hpp>
+#include <thread>
 
 using boost::asio::ip::tcp;
 class HTTPserver
 {
 public:
-  HTTPserver(NginxConfig config, boost::asio::io_service &io_service);
+  HTTPserver(NginxConfig config, boost::asio::io_service &io_service, uint32_t thread_pool_size = 1);
 
 private:
+  uint32_t thread_pool_size_;
   void start_accept();
   void handle_accept(session *new_session, const boost::system::error_code &error);
   void set_acceptor();
-
+  void handle_read(session *new_session);
+  void run();
   short port_;
   NginxConfig config_;
   boost::asio::io_service &io_service_;

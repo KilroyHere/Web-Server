@@ -1,4 +1,4 @@
-port 8080; # port my server listens on
+port 8081; # port my server listens on
 
 location /echo EchoRequestHandler { # no arguments
 }
@@ -20,4 +20,7 @@ location /api CrudRequestHandler {
 }
 
 location /health HealthRequestHandler {
+}
+
+location /sleep SleepRequestHandler {
 }

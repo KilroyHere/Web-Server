@@ -12,6 +12,7 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/http/status.hpp>
 #include <regex>
+#include <unistd.h>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -78,6 +79,14 @@ public:
   HealthRequestHandler(const std::string &request_uri, NginxConfig &config);
   // Fills the response body with the http request and sets status to ok.
   bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
+};
+
+class SleepRequestHandler : public RequestHandler
+{
+  public:
+    SleepRequestHandler(const std::string &request_uri, NginxConfig &config);
+    // Sleeps for 4 seconds and then sets status to ok.
+    bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
 };
 
 #endif // REQUEST_HANDLER_H
