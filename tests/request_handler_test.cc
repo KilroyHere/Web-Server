@@ -580,3 +580,95 @@ TEST_F(RequestHandlerTest, good_health_request)
   EXPECT_TRUE(res.body() == oss.str());
   EXPECT_TRUE(res.result() == http::status::ok);
 }
+
+TEST_F(RequestHandlerTest, sleep_request)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/sleep", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  sleep(2);
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, multiple_thread_request_echo)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/sleep", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  http::request<http::string_body> req2{http::verb::get, "/echo", 10};
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);
+  http::response<http::string_body> res2;
+  handler2->handle_request(req2, &res2);
+
+  std::ostringstream oss;
+  oss << req2;
+  EXPECT_TRUE(res2.body() == oss.str());
+  EXPECT_TRUE(res2.result() == http::status::ok);
+
+  sleep(2);
+
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, multiple_thread_request_static)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/sleep", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/good_request_with_response_mime_jpeg_test";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+
+  char c;
+  while (file.get(c))
+    body += c;
+
+  file.close();
+
+  http::request<http::string_body> req2{http::verb::get, "/static/mime_jpeg_test.jpeg", 10};
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);
+  http::response<http::string_body> res2;
+  handler2->handle_request(req2, &res2);
+  EXPECT_TRUE(res2.body() == body);
+  EXPECT_TRUE(res2.result() == http::status::ok);
+
+  sleep(2);
+
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, multiple_thread_request_crud)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/sleep", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  http::request<http::string_body> req2{http::verb::get, "/api/Shoes/2", 10};
+
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);
+  http::response<http::string_body> res2;
+  handler2->handle_request(req2, &res2);
+
+  EXPECT_TRUE(res2.body() == "404 Not Found: The ID does not exist.");
+  EXPECT_TRUE(res2.result() == http::status::not_found);
+
+  sleep(2);
+
+  EXPECT_TRUE(res.body() == "");
+  EXPECT_TRUE(res.result() == http::status::ok);
+}

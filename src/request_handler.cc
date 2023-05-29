@@ -342,9 +342,9 @@ bool HealthRequestHandler::handle_request(const http::request<http::string_body>
 
 bool SleepRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
-  BOOST_LOG_TRIVIAL(info) << "sleeping for 10 seconds";
-  sleep(10);
-  BOOST_LOG_TRIVIAL(info) << "slept for 10 seconds";
+  BOOST_LOG_TRIVIAL(info) << "sleeping for 1 seconds";
+  sleep(1);
+  BOOST_LOG_TRIVIAL(info) << "slept for 1 seconds";
   http_response->result(http::status::ok);
   http_response->body() = "";
   http_response->prepare_payload();

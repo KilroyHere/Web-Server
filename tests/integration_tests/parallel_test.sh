@@ -60,7 +60,7 @@ curl_sleep "$PORTVALUE"
 
 curl_echo "$PORTVALUE"
 
-sleep 11
+sleep 2
 
 diff echo.txt empty.txt
 
