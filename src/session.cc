@@ -81,6 +81,12 @@ int session::handle_read(const boost::system::error_code &error, size_t bytes_tr
                 log_message += response_header_oss.str();
                 log_message += "\n==============END-OF-RESPONSE===============";
                 BOOST_LOG_TRIVIAL(info) << log_message;
+                log_message = "[ResponseMetrics] ResponseCode: " + std::to_string(http_response_.result_int()) +
+                              " | RequestPath: " + http_request_.target().to_string() +
+                              " | RequestIP: " + boost::lexical_cast<std::string>(socket_.remote_endpoint()) +
+                              " | RequestHandler: " + handler->get_name();
+                BOOST_LOG_TRIVIAL(info) << log_message;
+
                 std::vector<char> response_buffer(response_str.begin(), response_str.end());
 
                 // Send the response

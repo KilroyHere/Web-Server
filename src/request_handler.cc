@@ -350,3 +350,38 @@ bool SleepRequestHandler::handle_request(const http::request<http::string_body> 
   http_response->prepare_payload();
   return true;
 }
+
+std::string EchoRequestHandler::get_name()
+{
+  return "EchoRequestHandler";
+}
+
+std::string StaticRequestHandler::get_name()
+{
+  return "StaticRequestHandler";
+}
+
+std::string BadRequestHandler::get_name()
+{
+  return "BadRequestHandler";
+}
+
+std::string NotFoundRequestHandler::get_name()
+{
+  return "NotFoundRequestHandler";
+}
+
+std::string CrudRequestHandler::get_name()
+{
+  return "CrudRequestHandler";
+}
+
+std::string HealthRequestHandler::get_name()
+{
+  return "HealthRequestHandler";
+}
+
+std::string SleepRequestHandler::get_name()
+{
+  return "SleepRequestHandler";
+}
