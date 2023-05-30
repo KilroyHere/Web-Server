@@ -672,3 +672,63 @@ TEST_F(RequestHandlerTest, multiple_thread_request_crud)
   EXPECT_TRUE(res.body() == "");
   EXPECT_TRUE(res.result() == http::status::ok);
 }
+
+TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_too_long)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/api/Shoes/big/sock/2", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_short)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/api", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_get)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_put)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::put, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_delete)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::delete_, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}

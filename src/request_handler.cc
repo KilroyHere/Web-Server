@@ -82,6 +82,37 @@ bool NotFoundRequestHandler::handle_request(const http::request<http::string_bod
 
 bool CrudRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
+  // Checking length of URI
+  std::string complete_uri = http_request.target().to_string();
+
+  int length = 0;
+  for (int i = 0; i < complete_uri.length(); i++)
+  {
+    if (complete_uri[i] == '/')
+    {
+      length++;
+    }
+  }
+
+  if (complete_uri[complete_uri.length() - 1] == '/' && http_request.method() != http::verb::post)
+  {
+    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+    http_response->result(http::status::bad_request);
+    http_response->body() = "400: Bad Request. The ID is invalid.";
+    http_response->prepare_payload();
+    return true;
+  }
+
+  // Incorrect length of URI, malformed request
+  if (length != 2 && length != 3)
+  {
+    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+    http_response->result(http::status::bad_request);
+    http_response->body() = "400: Bad Request. The ID is invalid.";
+    http_response->prepare_payload();
+    return true;
+  }
+
   if (http_request.method() == http::verb::post)
   { // POST method
     // Get the next available id
@@ -125,6 +156,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
   }
   else if (http_request.method() == http::verb::get) // GET method
   {
+    
     std::string target = http_request.target().to_string();
     std::regex regex_expr("[0-9]+");
     std::string id_str = target.substr(target.find_last_of("/") + 1);
