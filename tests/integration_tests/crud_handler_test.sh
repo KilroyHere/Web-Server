@@ -6,8 +6,6 @@
 #   (must run the tests in the root directory of the project to simulate the prod environment)
 #=============================
 
-#exit code of test (0 if all pass, 1 if not)
-finalExit=0
 
 #========TEST CREATING FILE WITH POST=============
 post_call() { 
@@ -19,12 +17,12 @@ post_call() {
     #use python to access id in json data
     post_json_id=$(python3 -c "import sys, json; f = open('post.json',); print(json.load(f)['id'])")
 
-    diff ../folder4/int_test/$post_json_id test.json
+    diff ../crud/int_test/$post_json_id test.json
 
     if [ "$?" != "0" ]
     then
         echo "Unsuccessful POST (file was not saved correctly)"
-        finalExit=1
+        exit 1
     else
         echo "Successful POST"
     fi
@@ -37,12 +35,12 @@ get_call() {
 
     curl localhost:$1/api/int_test/$2 -o get.json -s
 
-    diff ../folder4/int_test/$2 get.json
+    diff ../crud/int_test/$2 get.json
 
     if [ "$?" != "0" ]
     then
         echo "Unsuccessful GET (file was not retrieved correctly)"
-        finalExit=1
+        exit 1
     else
         echo "Successful GET"
     fi
@@ -57,12 +55,12 @@ put_call() {
     curl -X PUT localhost:$1/api/int_test/$2 -H "Content-Type: application/json" -d '{"Id": 80, "status": 4}' -s
     #use python to access id in json data
 
-    diff ../folder4/int_test/$2 put.json
+    diff ../crud/int_test/$2 put.json
 
     if [ "$?" != "0" ]
     then
         echo "Unsuccessful PUT (file was not updated correctly)"
-        finalExit=1
+        exit 1
     else
         echo "Successful PUT"
     fi
@@ -77,15 +75,15 @@ get_list_call () {
     get_json_list=$(python3 -c "import sys, json; f = open('get_list.json',); arr = json.load(f); [print(i) for i in arr]")
     readarray myarray < <(echo "${get_json_list[@]}")
     length=$(echo "${#myarray[@]}")
-    files_in_dir=$(ls -1 ../folder4/int_test | wc -l)
+    files_in_dir=$(ls -1 ../crud/int_test | wc -l)
 
     for i in $get_json_list
     do
-        if test -f ../folder4/int_test/$i; then
+        if test -f ../crud/int_test/$i; then
             continue
         else
-            finalExit=1
             echo "Unsuccessful GET (list returned included non-existent ID)"
+            exit 1
             return
         fi
     done
@@ -94,8 +92,8 @@ get_list_call () {
     then
         echo "Successful GET (list)"
     else
-        finalExit=1
         echo "Unsuccessful GET (list returned different number of IDs than directory contains)"
+        exit 1
     fi
 
 }
@@ -116,14 +114,14 @@ delete_call() {
     if [ "$?" != "0" ]
     then
         echo "Incorrect DELETE response (wrong HTTP code and/or body)"
-        finalExit=1
+        exit 1
     else
         echo "Correct DELETE response"
     fi
 
-    if test -f ../folder4/int_test/$2; then
+    if test -f ../crud/int_test/$2; then
         echo "Unsuccessful DELETE (file still exists)"
-        finalExit=1
+        exit 1
     else
         echo "Successful DELETE"
     fi
@@ -132,17 +130,18 @@ delete_call() {
 
 clean_up () {
     rm listen.txt post.json test.json get.json put.json delete.txt delete_test.txt get_list.json
-    rm -r ../folder4/int_test
+    rm -r ../crud/int_test
+    kill $(ps -aux | grep "../../build/bin/server $file_name" | awk '{print $2}' | head -n 1)
+    kill -9 "$!"
 }
 
 touch ./listen.txt
 
-file_name="config/server_config"
+file_name="../../config/server_config"
 PORTVALUE="8080"
 echo "$PORTVALUE"
 echo "$file_name"
-./build/bin/server "$file_name" > ./listen.txt 2>&1 &
-webserverPID=$!
+../../build/bin/server "$file_name" > ./listen.txt 2>&1 &
 
 post_call "$PORTVALUE"
 
@@ -156,7 +155,5 @@ delete_call "$PORTVALUE" "$post_json_id"
 
 clean_up
 
-kill $webserverPID
-
-exit $finalExit
+exit 0
 
