@@ -600,7 +600,7 @@ TEST_F(RequestHandlerTest, multiple_thread_request_echo)
   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
   http::response<http::string_body> res;
   handler->handle_request(req, &res);
-  
+
   http::request<http::string_body> req2{http::verb::get, "/echo", 10};
   std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);
   http::response<http::string_body> res2;
@@ -624,7 +624,7 @@ TEST_F(RequestHandlerTest, multiple_thread_request_static)
   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
   http::response<http::string_body> res;
   handler->handle_request(req, &res);
-  
+
   size_t bytes_transferred;
   std::vector<char> response_data;
   std::string file_path = "./request_handler_tests/good_request_with_response_mime_jpeg_test";
@@ -731,4 +731,80 @@ TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_delete)
 
   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
   EXPECT_TRUE(res.result() == http::status::bad_request);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_echo_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/echo/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "EchoRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_static_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/static/index.html", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "StaticRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_bad_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(nullptr);
+  std::string name = handler->get_name();
+  std::string expected_name = "BadRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_not_found_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/connect", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "NotFoundRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_crud_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api/Shoes/2", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "CrudRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_health_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/health", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "HealthRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
+}
+
+TEST_F(RequestHandlerTest, get_name_of_sleep_request_handler)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/sleep", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "SleepRequestHandler";
+
+  EXPECT_TRUE(name == expected_name);
 }

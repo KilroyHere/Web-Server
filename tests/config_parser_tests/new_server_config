@@ -22,5 +22,5 @@ location /api CrudRequestHandler {
 location /health HealthRequestHandler {
 }
 
-location /sleep StaticRequestHandler {
+location /sleep SleepRequestHandler {
 }
