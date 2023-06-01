@@ -187,7 +187,7 @@ RequestParser::result_type session::request_parse(size_t bytes_transferred)
             request_.set_headers_map();
             if (request_.headers_map.find("content-length") != request_.headers_map.end())
             {
-                parsing_state_ == READING_BODY;
+                parsing_state_ = READING_BODY;
                 body_read_ = 0;
                 int read_result = read_body(data_, bytes_transferred);
                 if (read_result)
