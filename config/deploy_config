@@ -24,3 +24,11 @@ location /health HealthRequestHandler {
 
 location /sleep SleepRequestHandler {
 }
+
+location /rplace StaticRequestHandler {
+  root ./rplacefiles_deploy; # supports relative paths
+}
+
+location /rplacedata CrudRequestHandler {
+  root ./rplacecrud; # supports relative paths
+}

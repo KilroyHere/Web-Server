@@ -156,7 +156,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
   }
   else if (http_request.method() == http::verb::get) // GET method
   {
-    
+
     std::string target = http_request.target().to_string();
     std::regex regex_expr("[0-9]+");
     std::string id_str = target.substr(target.find_last_of("/") + 1);
@@ -209,7 +209,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       std::string body = "[";
 
       boost::filesystem::path path(data_path);
-      if (!boost::filesystem::exists(path))
+      if (!boost::filesystem::exists(path) || boost::filesystem::is_regular_file(path))
       {
         BOOST_LOG_TRIVIAL(warning) << "Attempted to GET directory that does not exist: " << data_path;
         http_response->result(http::status::not_found);
@@ -242,8 +242,9 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     }
     return true;
   }
-  else if (http_request.method() == http::verb::put)
-  { // PUT method
+  // PUT method
+  else if (http_request.method() == http::verb::put) 
+  { 
     std::string target = http_request.target().to_string();
 
     int id;
@@ -265,7 +266,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
     boost::filesystem::path dir = path.parent_path();
 
-    http::status status = http::status::no_content;
+    http::status status = http::status::ok;
 
     if (!boost::filesystem::exists(path))
     {
@@ -298,8 +299,9 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
 
     return true;
   }
+  // DELETE method
   else if (http_request.method() == http::verb::delete_)
-  { // DELETE method
+  { 
     // Get full file path
     std::string target = http_request.target().to_string();
 
@@ -350,6 +352,17 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     http_response->set(http::field::content_type, "text/HTML");
     http_response->prepare_payload();
 
+    return true;
+  }
+  // Preflight OPTIONS Check
+  else if(http_request.method() == http::verb::options)
+  {
+    http_response->result(http::status::no_content);
+    http_response->version(http_request.version());
+    http_response->set(http::field::access_control_allow_origin,"*");
+    http_response->set(http::field::access_control_allow_methods, "GET, POST, PUT, DELETE");
+    http_response->set(http::field::access_control_max_age,"2147483647");
+    http_response->prepare_payload();
     return true;
   }
   else
