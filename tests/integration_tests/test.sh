@@ -105,7 +105,7 @@ nc_call "String" "$PORTVALUE"
 echo "test.sh was successful"
 
 clean_up
-exit 0
+exit 0 
 
 
 
