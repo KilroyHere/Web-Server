@@ -489,7 +489,7 @@ TEST_F(RequestHandlerTest, valid_crud_put_get)
 
   http::response<http::string_body> res_3;
   handler_3->handle_request(req_3, &res_3);
-  EXPECT_TRUE(res_3.result() == http::status::no_content);
+  EXPECT_TRUE(res_3.result() == http::status::ok);
 
   http::request<http::string_body> req_4{http::verb::get, "/api/Shoes/1", 10};
   std::unique_ptr<RequestHandler> handler_4 = nhf.createHandler(&req_4);
