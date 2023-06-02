@@ -20,6 +20,7 @@ COPY --from=builder /usr/src/project/config/deploy_config .
 COPY --from=builder /usr/src/project/folder1 ./folder1
 COPY --from=builder /usr/src/project/folder2 ./folder2
 COPY --from=builder /usr/src/project/folder3 ./folder3
+COPY --from=builder /usr/src/project/rplacefiles_deploy ./rplacefiles_deploy
 COPY --from=builder /usr/src/project/crud ./mnt/storage/crud
 COPY --from=builder /usr/src/project/rplacecrud ./mnt/storage/rplacecrud
 

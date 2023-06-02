@@ -30,5 +30,5 @@ location /rplace StaticRequestHandler {
 }
 
 location /rplacedata CrudRequestHandler {
-  root ./rplacecrud; # supports relative paths
+  root ../mnt/storage/rplacecrud; # supports relative paths
 }
