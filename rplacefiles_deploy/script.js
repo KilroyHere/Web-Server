@@ -179,7 +179,7 @@ async function fetchDataAndCreateGrid() {
     const storedGrid = await getGrid2();
     artGrid = storedGrid;
     updateGridUI();
-  }, 100); // Poll every 5 seconds
+  }, 300); // Poll every 5 seconds
 }
 
 function updateGridUI() {

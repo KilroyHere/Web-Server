@@ -89,6 +89,7 @@ function updateArtGrid(cell) {
   };
   artGrid[cell.getAttribute("row")][cell.getAttribute("col")] = cellInfo;
   postGrid2(artGrid);
+  
 }
 
 function clearGrid() {
@@ -179,7 +180,7 @@ async function fetchDataAndCreateGrid() {
     const storedGrid = await getGrid2();
     artGrid = storedGrid;
     updateGridUI();
-  }, 100); // Poll every 5 seconds
+  }, 300); 
 }
 
 function updateGridUI() {
