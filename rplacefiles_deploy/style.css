@@ -42,6 +42,11 @@ button {
   padding: 5px;
 }
 
+button:hover {
+  background-color: #901818 !important;
+  cursor: pointer;
+}
+
 input[type="color"] {
   -webkit-appearance: none;
   -moz-appearance: none;

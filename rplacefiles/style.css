@@ -40,6 +40,12 @@ button {
   border: none;
   border-radius: 5px;
   padding: 5px;
+  width: 150px;
+}
+
+button:hover {
+  background-color: #901818 !important;
+  cursor: pointer;
 }
 
 input[type="color"] {
