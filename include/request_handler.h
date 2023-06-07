@@ -99,4 +99,17 @@ public:
   std::string get_name() override;
 };
 
+class AuthenticationRequestHandler : public RequestHandler
+{
+public:
+  AuthenticationRequestHandler(const std::string &request_uri, NginxConfig &config);
+
+  bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
+  std::string get_name() override;
+
+private:
+  NginxConfig config_;
+  std::string data_path;
+};
+
 #endif // REQUEST_HANDLER_H

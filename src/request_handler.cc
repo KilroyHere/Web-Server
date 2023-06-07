@@ -14,6 +14,8 @@ HealthRequestHandler::HealthRequestHandler(const std::string &request_uri, Nginx
 
 SleepRequestHandler::SleepRequestHandler(const std::string &request_uri, NginxConfig &config) {}
 
+AuthenticationRequestHandler::AuthenticationRequestHandler(const std::string &request_uri, NginxConfig &config) : config_(config), data_path(request_uri) {}
+
 bool EchoRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   std::ostringstream oss;
@@ -399,6 +401,56 @@ bool SleepRequestHandler::handle_request(const http::request<http::string_body> 
   return true;
 }
 
+bool AuthenticationRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) 
+{
+   // GET for login.html
+   if (http_request.method() == http::verb::get)
+   {
+    
+    std::vector<std::string> tokens;
+    boost::split(tokens, data_path, boost::is_any_of("/"));
+
+    std::vector<std::string> values;
+    boost::split(values, tokens[2], boost::is_any_of("="));
+
+    std::string password = values[1];
+    std::string username = values[0];
+    std::string new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+    size_t hashed_password = boost::hash<std::string>{}(password);
+
+    std::string uri = "/rplacedata/" + username + "/" + "1";
+
+    CrudRequestHandler crh(new_path, config_);
+    http::request<http::string_body> req_1{http::verb::get, uri, 10};
+
+    http::response<http::string_body> res_1;
+    crh.handle_request(req_1, &res_1);
+
+    // found file
+    if (res_1.result() == http::status::ok)
+    {
+      std::stringstream ss2;
+      ss2 << res_1.body();
+      std::string body2 = ss2.str();
+
+      //correct password
+      if (body2 == std::to_string(hashed_password))
+      {
+        http_response->result(http::status::ok);
+        http_response->body() = "{\"hashed_password\": \"" + std::to_string(hashed_password) +  "\"}";
+        http_response->prepare_payload();
+        return true;
+      }      
+    }
+
+    //incorrect password
+    http_response->result(http::status::not_found);
+    http_response->prepare_payload();
+    return true;
+   }
+   return true;
+}
+
 std::string EchoRequestHandler::get_name()
 {
   return "EchoRequestHandler";
@@ -432,4 +484,9 @@ std::string HealthRequestHandler::get_name()
 std::string SleepRequestHandler::get_name()
 {
   return "SleepRequestHandler";
+}
+
+std::string AuthenticationRequestHandler::get_name()
+{
+  return "AuthenticationRequestHandler";
 }
