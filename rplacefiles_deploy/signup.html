@@ -37,11 +37,16 @@
                     <div class="form-check d-flex justify-content-center mb-5">
                         <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
                         <label class="form-check-label" for="form2Example3">
-                          I agree all statements in <a href="#!">Terms of service</a>
+                          I agree all statements in <a href="https://www.youtube.com/watch?v=xm3YgoEiEDc&ab_channel=10Hours">Terms of service</a>
                         </label>
                     </div>
                     <div style="padding-top: 15px;">
-                    <button type="submit" class="btn btn-primary text-center">Submit</button>
+                        <script>
+                            function redirectToPage() {
+                                window.location.href = "signup_redirect.html";
+                            }
+                        </script>
+                    <button onclick="redirectToPage()" type="submit" class="btn btn-primary text-center">Submit</button>
                     </div>
                 </form>
             </div>
