@@ -20,8 +20,8 @@ let events = {
 let deviceType = isTouchDevice() ? "touch" : "mouse";
 let drawCount = 0;
 let firstDrawTime = 0;
-const MAX_DRAWINGS = 10; //Only 10 Drawings per minute
-const DRAWING_INTERVAL = 60000; // 1 minute in milliseconds
+const MAX_DRAWINGS = 1; //Only 1 drawing per 2 seconds
+const DRAWING_INTERVAL = 2000; // 2 seconds in milliseconds
 
 function isTouchDevice() {
   try {
