@@ -13,6 +13,7 @@
 #include <boost/beast/http/status.hpp>
 #include <regex>
 #include <unistd.h>
+#include <mutex>
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -24,6 +25,7 @@ public:
   virtual bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) = 0;
   // bool connection_close(const http::request<std::string> *http_request);
   virtual std::string get_name() = 0;
+  std::mutex mutex_file;
 };
 
 class EchoRequestHandler : public RequestHandler
