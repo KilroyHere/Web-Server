@@ -9,6 +9,8 @@
 #include "mime_types.h"
 #include "config_parser.h"
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/functional/hash.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/http/status.hpp>
 #include <regex>

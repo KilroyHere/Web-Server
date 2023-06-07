@@ -448,6 +448,103 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
     http_response->prepare_payload();
     return true;
    }
+   
+   // POST for signup.html
+   else if (http_request.method() == http::verb::post) 
+   {
+
+    std::stringstream ss;
+    ss << http_request.body();
+    std::string body = ss.str();
+
+    std::vector<std::string> tokens;
+    boost::split(tokens, body, boost::is_any_of("&"));
+
+    // username 
+    std::vector<std::string> username_tokens;
+    boost::split(username_tokens, tokens[0], boost::is_any_of("="));
+    std::string username = username_tokens[1];
+
+    std::vector<std::string> password_tokens;
+    boost::split(password_tokens, tokens[1], boost::is_any_of("="));
+    std::string password = password_tokens[1];
+    size_t hashed_password = boost::hash<std::string>{}(password);
+
+    std::string uri = "/rplacedata/" + username;
+
+    CrudRequestHandler crh(data_path, config_);
+    http::request<http::string_body> req_1{http::verb::get, uri, 10};
+
+    http::response<http::string_body> res_1;
+    crh.handle_request(req_1, &res_1);
+
+    // user doesn't exist
+    if (res_1.result() == http::status::not_found)
+    {
+      http::request<http::string_body> req_2{http::verb::post, uri, 10};
+      http::response<http::string_body> res_2;
+      req_2.body() = std::to_string(hashed_password);
+      crh.handle_request(req_2, &res_2);
+      
+      http_response->result(http::status::ok);
+      http_response->prepare_payload();
+      return true;
+    }
+
+    // user does exist 
+    else 
+    {
+      http_response->result(http::status::not_found);
+      http_response->prepare_payload();
+      return true;
+    }
+   }
+   
+   // PUT for index.html
+   else if (http_request.method() == http::verb::put)
+   {
+
+    std::vector<std::string> tokens;
+    boost::split(tokens, data_path, boost::is_any_of("/"));
+
+    std::vector<std::string>values;
+    boost::split(values, tokens[2], boost::is_any_of("="));
+
+    std::string password = values[1];
+    std::string username = values[0];
+    std::string new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+    size_t hashed_password = boost::hash<std::string>{}(password);
+
+    std::string uri = "/rplacedata/" + username + "/" + "1";
+
+    CrudRequestHandler crh(new_path, config_);
+    http::request<http::string_body> req_1{http::verb::get, uri, 10};
+
+    http::response<http::string_body> res_1;
+    crh.handle_request(req_1, &res_1);
+
+    // found file
+    if (res_1.result() == http::status::ok)
+    {
+      std::stringstream ss2;
+      ss2 << res_1.body();
+      std::string body2 = ss2.str();
+
+      //correct password
+      if (body2 == password)
+      {
+        http_response->result(http::status::ok);
+        http_response->body() = "{\"hashed_password\": " + std::to_string(hashed_password) + "}";
+        http_response->prepare_payload();
+        return true;
+      }      
+    }
+    //incorrect password
+    http_response->result(http::status::not_found);
+    http_response->prepare_payload();
+    return true;
+   }
+
    return true;
 }
 
