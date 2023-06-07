@@ -119,7 +119,7 @@ paintBtn.addEventListener("click", () => (erase = false));
 
 
 async function getGrid2() {
-  const url = "http://34.83.71.241/rplacedata/data/1";
+  const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -134,7 +134,7 @@ async function getGrid2() {
 
 
 function deleteGrid2() {
-  const url = "http://34.83.71.241/rplacedata/data/1";
+  const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
   const options = {
     method: "PUT",
     body: JSON.stringify(emptyGrid),
@@ -154,7 +154,7 @@ function deleteGrid2() {
 }
 
 function postGrid2(grid) {
-  const url = "http://34.83.71.241/rplacedata/data/1";
+  const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
   const options = {
     method: "PUT",
     body: JSON.stringify(grid),
