@@ -59,7 +59,7 @@ async function createGrid(rows, cols) {
 function handleMouseDown() {
   if (drawCount >= MAX_DRAWINGS) {
     if (Date.now() - firstDrawTime < DRAWING_INTERVAL) {
-      alert(`You can only draw ${MAX_DRAWINGS} times per minute. Please wait a moment.`);
+      alert(`You can only draw ${MAX_DRAWINGS} time per 2 seconds. Please wait a moment.`);
       return;
     } else {
       drawCount = 0;
