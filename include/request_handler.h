@@ -9,6 +9,8 @@
 #include "mime_types.h"
 #include "config_parser.h"
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/functional/hash.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/http/status.hpp>
 #include <regex>
@@ -97,6 +99,19 @@ public:
   // Sleeps for 4 seconds and then sets status to ok.
   bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
   std::string get_name() override;
+};
+
+class AuthenticationRequestHandler : public RequestHandler
+{
+public:
+  AuthenticationRequestHandler(const std::string &request_uri, NginxConfig &config);
+
+  bool handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response) override;
+  std::string get_name() override;
+
+private:
+  NginxConfig config_;
+  std::string data_path;
 };
 
 #endif // REQUEST_HANDLER_H

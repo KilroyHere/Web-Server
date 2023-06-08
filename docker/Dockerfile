@@ -23,6 +23,7 @@ COPY --from=builder /usr/src/project/folder3 ./folder3
 COPY --from=builder /usr/src/project/rplacefiles_deploy ./rplacefiles_deploy
 COPY --from=builder /usr/src/project/crud ./mnt/storage/crud
 COPY --from=builder /usr/src/project/rplacecrud ./mnt/storage/rplacecrud
+COPY --from=builder /usr/src/project/rplaceusers ./mnt/storage/rplaceusers
 
 EXPOSE 8080 80
 

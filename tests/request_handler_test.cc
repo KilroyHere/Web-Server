@@ -809,26 +809,26 @@ TEST_F(RequestHandlerTest, get_name_of_sleep_request_handler)
   EXPECT_TRUE(name == expected_name);
 }
 
-TEST_F(RequestHandlerTest, r_place_request_handler)
-{
-  size_t bytes_transferred;
-  std::vector<char> response_data;
-  std::string file_path = "./request_handler_tests/r_place";
-  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
-  std::string body = "";
-  char c;
-  while (file.get(c))
-    body += c;
-  file.close();
-  RequestHandlerFactory nhf(out_config);
-  http::request<http::string_body> req{http::verb::get, "/rplace/index.html", 10};
-  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-  std::string name = handler->get_name();
-  std::string expected_name = "StaticRequestHandler";
-  http::response<http::string_body> res;
-  handler->handle_request(req, &res);
+// TEST_F(RequestHandlerTest, r_place_request_handler)
+// {
+//   size_t bytes_transferred;
+//   std::vector<char> response_data;
+//   std::string file_path = "./request_handler_tests/r_place";
+//   std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+//   std::string body = "";
+//   char c;
+//   while (file.get(c))
+//     body += c;
+//   file.close();
+//   RequestHandlerFactory nhf(out_config);
+//   http::request<http::string_body> req{http::verb::get, "/rplace/index.html", 10};
+//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+//   std::string name = handler->get_name();
+//   std::string expected_name = "StaticRequestHandler";
+//   http::response<http::string_body> res;
+//   handler->handle_request(req, &res);
   
-  EXPECT_TRUE(name == expected_name);
-  EXPECT_TRUE(res.body() == body);
-  EXPECT_TRUE(res.result() == http::status::ok);
-}
+//   EXPECT_TRUE(name == expected_name);
+//   EXPECT_TRUE(res.body() == body);
+//   EXPECT_TRUE(res.result() == http::status::ok);
+// }

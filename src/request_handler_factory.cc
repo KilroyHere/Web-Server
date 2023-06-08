@@ -104,6 +104,11 @@ std::unique_ptr<RequestHandler> RequestHandlerFactory::createHandler(const http:
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating SleepRequestHandler";
     return std::make_unique<SleepRequestHandler>(new_request_uri, parsed_config);
   }
+  else if (handler == "AuthenticationRequestHandler")
+  {
+    BOOST_LOG_TRIVIAL(severity_level::info) << "Creating AuthenticationRequestHandler";
+    return std::make_unique<AuthenticationRequestHandler>(new_request_uri, parsed_config);
+  }
   else
   {
     BOOST_LOG_TRIVIAL(severity_level::info) << "Creating NotFoundRequestHandler";
