@@ -15,53 +15,17 @@
             <div class="d-flex justify-content-center"
                 style="padding-top: 30px;">
             <div class="col-lg-4 col-lg-offset-4">
-                <form class="form-example" id="myForm" action="http://www.git-gud.cs130.org/rplaceuser/" onsubmit="handleSubmit(event)" >
+                <form class="form-example" action="" method="post">
                     <div class="form-group">
                         <label for="username_input">Username</label>
-                        <input type="username" name="username" class="form-control" id="username_input" placeholder="Username">
+                        <input type="username" class="form-control" id="username_input" placeholder="Username">
                     </div>
                     <div class="form-group">
                         <label for="password_input">Password</label>
-                        <input type="password" name="password" class="form-control" id="password_input" placeholder="Password">
+                        <input type="password" class="form-control" id="password_input" placeholder="Password">
                     </div>
                     <div style="padding-top: 15px;">
-                        <script>
-                            function handleSubmit(event) {
-   
-                               event.preventDefault();
-                               var params = document.getElementById('username_input').value + "=" + document.getElementById('password_input').value;
-                               var action_val ="http://www.git-gud.cs130.org/rplaceuser/" + params;
-                               var form = document.getElementById('myForm');
-                               form.action = action_val;
-   
-                               const url = action_val;
-                               const options = {
-                                   method: "GET",
-                                   headers: {
-                                   "Content-Type": "text/plain",
-                                   },
-                               };
-                               
-                               fetch(url, options)
-                                   .then((response) => {
-                                   if (!response.ok) {
-                                       throw new Error("Request failed");
-                                   }
-                                   return response.json();
-                                   })
-                                   .then((data) => {
-                                       localStorage.setItem("username", document.getElementById('username_input').value);
-                                       localStorage.setItem("password", data.hashed_password);
-                                   })
-                                   .catch((error) => {
-                                    window.alert('Wrong Credentials!');
-                                    window.location.href = "login.html";
-                                   });
-   
-                               window.location.href = "index.html";
-                               }
-                        </script>
-                        <button type="submit" class="btn btn-primary text-center">Submit</button>
+                    <button type="submit" class="btn btn-primary text-center">Submit</button>
                     </div>
                 </form>
             </div>

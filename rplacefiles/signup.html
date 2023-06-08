@@ -15,14 +15,18 @@
             <div class="d-flex justify-content-center"
                 style="padding-top: 30px;">
             <div class="col-lg-4 col-lg-offset-4">
-                <form class="form-example" id="myForm" action="http://localhost:8080/rplaceuser/" onsubmit="handleSubmit(event)" method="POST">
+                <form class="form-example" action="" method="post">
                     <div class="form-group">
                         <label for="username_input">New Username</label>
-                        <input type="username" name="username" class="form-control" id="username_input" placeholder="Create a username">
+                        <input type="username" class="form-control" id="new_username_input" placeholder="Create a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="email_input">Enter your email</label>
+                        <input type="email" class="form-control" id="email_input" placeholder="example@email.com">
                     </div>
                     <div class="form-group">
                         <label for="password_input">Password</label>
-                        <input type="password" name="password" class="form-control" id="password_input" placeholder="Enter password">
+                        <input type="password" class="form-control" id="password_input" placeholder="Enter password">
                     </div>
                     <div style="padding-top: 15px;">                    
                     </div>
@@ -38,48 +42,16 @@
                     </div>
                     <div style="padding-top: 15px;">
                         <script>
-
-                            function handleSubmit(event) {
-
-                                event.preventDefault();
-                                var action_val ="http://localhost:8080/rplaceuser/" + document.getElementById("username_input").value;
-                                var form = document.getElementById('myForm');
-                                form.action = action_val;
-                                var params = new URLSearchParams();
-                                params.append('username', document.getElementById('username_input').value);
-                                params.append('password', document.getElementById('password_input').value);
-                                const queryString = params.toString();
-
-                                const url = action_val;
-                                const options = {
-                                    method: "POST",
-                                    body: queryString,
-                                    headers: {
-                                    "Content-Type": "text/plain",
-                                    },
-                                };
-
-                                fetch(url, options)
-                                    .then((response) => {
-                                    if (!response.ok) {
-                                        throw new Error("Request failed");
-                                    }
-                                    })
-                                    .catch((error) => {
-                                        window.alert('User already exist!');
-                                        window.location.href = "signup.html";
-                                    });
-
+                            function redirectToPage() {
                                 window.location.href = "signup_redirect.html";
                             }
                         </script>
-                    <button type="submit" class="btn btn-primary text-center">Submit</button>
+                    <button onclick="redirectToPage()" type="submit" class="btn btn-primary text-center">Submit</button>
                     </div>
                 </form>
             </div>
             </div>
         </div>
-        <!-- Script -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>     
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>        
     </body>
 </html>

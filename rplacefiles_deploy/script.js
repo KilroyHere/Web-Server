@@ -1,5 +1,5 @@
 let container = document.querySelector(".container");
-let logoutButton = document.getElementById("log-out");
+let gridButton = document.getElementById("submit-grid");
 let clearGridButton = document.getElementById("clear-grid");
 let colorButton = document.getElementById("color-input");
 let eraseBtn = document.getElementById("erase-btn");
@@ -59,7 +59,7 @@ async function createGrid(rows, cols) {
 function handleMouseDown() {
   if (drawCount >= MAX_DRAWINGS) {
     if (Date.now() - firstDrawTime < DRAWING_INTERVAL) {
-      alert(`You can only draw ${MAX_DRAWINGS} times per 2 seconds. Please wait a moment.`);
+      alert(`You can only draw ${MAX_DRAWINGS} time per 2 seconds. Please wait a moment.`);
       return;
     } else {
       drawCount = 0;
@@ -89,7 +89,6 @@ function updateArtGrid(cell) {
   };
   artGrid[cell.getAttribute("row")][cell.getAttribute("col")] = cellInfo;
   postGrid2(artGrid);
-  
 }
 
 function clearGrid() {
@@ -100,16 +99,24 @@ function clearGrid() {
   createGrid(rows,cols);
 }
 
-logoutButton.addEventListener("click", logout);
+// gridButton.addEventListener("click", () => createGrid(rows, cols));
 clearGridButton.addEventListener("click", clearGrid);
 eraseBtn.addEventListener("click", () => (erase = true));
 paintBtn.addEventListener("click", () => (erase = false));
 
-function logout() {
-  localStorage.removeItem("username");
-  localStorage.removeItem("password");  
+// Local Storage Functions
+// function postGrid(grid) {
+//   localStorage.setItem("artGrid", JSON.stringify(grid));
+// }
 
-}
+// function getGrid() {
+//   return localStorage.getItem("artGrid");
+// }
+
+// function deleteGrid() {
+//   localStorage.removeItem("artGrid");
+// }
+
 
 async function getGrid2() {
   const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
@@ -124,6 +131,7 @@ async function getGrid2() {
     return emptyGrid;
   }
 }
+
 
 function deleteGrid2() {
   const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
@@ -146,14 +154,7 @@ function deleteGrid2() {
 }
 
 function postGrid2(grid) {
-  var username = localStorage.getItem('username');
-  var password = localStorage.getItem('password');
-  if (username == null || password == null)
-  {
-    window.alert('You are not logged in!');
-    window.location.href = "login.html";
-  }
-  let url = "http://www.git-gud.cs130.org/rplaceuser/" + username + "=" + password;
+  const url = "http://www.git-gud.cs130.org/rplacedata/data/1";
   const options = {
     method: "PUT",
     body: JSON.stringify(grid),
@@ -162,30 +163,14 @@ function postGrid2(grid) {
     },
   };
 
-  // auth
   fetch(url, options)
     .then((response) => {
       if (!response.ok) {
-        window.alert('You are not logged in!');
-        window.location.href = "login.html";
-      }
-      else {
-        url = "http://www.git-gud.cs130.org/rplacedata/data/1";
-        fetch(url, options)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Request failed");
-          }
-          else {
-          }
-        })
-        .catch((error) => {
-        });
+        throw new Error("Request failed");
       }
     })
     .catch((error) => {
     });
-  
 }
 
 async function fetchDataAndCreateGrid() {
@@ -194,7 +179,7 @@ async function fetchDataAndCreateGrid() {
     const storedGrid = await getGrid2();
     artGrid = storedGrid;
     updateGridUI();
-  }, 300); 
+  }, 300); // Poll every 5 seconds
 }
 
 function updateGridUI() {
@@ -208,3 +193,28 @@ function updateGridUI() {
 }
 
 fetchDataAndCreateGrid();
+
+// createGrid(rows, cols);
+
+// document.addEventListener("keydown", function (event) {
+//   var elements = document.querySelectorAll(".gridCol");
+//   for (let i = 0; i < elements.length; i++) {
+//     let element = elements[i];
+//     // console.log(element.style.height);
+//     // Extract the numeric value from the string
+//     var numericValue = parseInt(element.style.height, 10);
+
+//     // Concatenate the new numeric value with the "px" unit
+
+//     if (event.key === "ArrowRight") {
+//       var updatedStr = numericValue + 1 + "px";
+//       element.style.height = updatedStr;
+//       element.style.width = updatedStr;
+//     } else if (event.key === "ArrowLeft") {
+//       var updatedStr = numericValue - 1 + "px";
+//       element.style.height = updatedStr;
+//       element.style.width = updatedStr;
+//       console.log(element);
+//     }
+//   }
+// });
