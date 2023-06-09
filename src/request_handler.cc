@@ -419,7 +419,7 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
     {
       boost::split(values, tokens[4], boost::is_any_of("="));
     }
-    else if (tokens.size() == 2) 
+    else if (tokens.size() == 3) 
     {
       boost::split(values, tokens[2], boost::is_any_of("="));
     }
@@ -433,13 +433,13 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
 
     BOOST_LOG_TRIVIAL(info) << values.size();
 
-    if (values.size() == 2 || values.size() == 5)
+    if (values.size() == 2)
     {
       BOOST_LOG_TRIVIAL(info) << "Well formed Request received";
       std::string password = values[1];
       std::string username = values[0];
       std::string new_path = "";
-      if (values.size() == 5)
+      if (tokens.size() == 5)
       {
         new_path = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + username;
       }
@@ -556,7 +556,7 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
     {
       boost::split(values, tokens[4], boost::is_any_of("="));
     }
-    else if (tokens.size() == 2) 
+    else if (tokens.size() == 3) 
     {
       boost::split(values, tokens[2], boost::is_any_of("="));
     }
@@ -570,14 +570,14 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
 
     BOOST_LOG_TRIVIAL(info) << values.size();
 
-    if (values.size() == 2 || values.size() == 5)
+    if (values.size() == 2)
     {
 
       std::string password = values[1];
       std::string username = values[0];
       std::string new_path = "";
 
-      if (values.size() == 5)
+      if (tokens.size() == 5)
       {
         new_path = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + username;
       }
