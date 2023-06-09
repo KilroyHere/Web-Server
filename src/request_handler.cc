@@ -402,6 +402,7 @@ bool SleepRequestHandler::handle_request(const http::request<http::string_body> 
 
 bool AuthenticationRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
+
   // GET for login.html
   if (http_request.method() == http::verb::get)
   {
@@ -411,18 +412,42 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
 
     BOOST_LOG_TRIVIAL(info) << data_path;
     BOOST_LOG_TRIVIAL(info) << tokens.size();
-    
+
     std::vector<std::string> values;
-    boost::split(values, tokens[2], boost::is_any_of("="));
+    // Handle token size for deployment or local development
+    if (tokens.size() == 5) 
+    {
+      boost::split(values, tokens[4], boost::is_any_of("="));
+    }
+    else if (tokens.size() == 2) 
+    {
+      boost::split(values, tokens[2], boost::is_any_of("="));
+    }
+    else 
+    {
+      BOOST_LOG_TRIVIAL(info) << "Malformed Request";
+      http_response->result(http::status::not_found);
+      http_response->prepare_payload();
+      return true;
+    }
 
     BOOST_LOG_TRIVIAL(info) << values.size();
 
-    if (values.size() == 2)
+    if (values.size() == 2 || values.size() == 5)
     {
       BOOST_LOG_TRIVIAL(info) << "Well formed Request received";
       std::string password = values[1];
       std::string username = values[0];
-      std::string new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+      std::string new_path = "";
+      if (values.size() == 5)
+      {
+        new_path = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + username;
+      }
+      else 
+      {
+        new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+      }
+
       size_t hashed_password = boost::hash<std::string>{}(password);
 
       std::string uri = "/rplacedata/" + username + "/" + "1";
@@ -522,14 +547,45 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
     std::vector<std::string> tokens;
     boost::split(tokens, data_path, boost::is_any_of("/"));
 
+    BOOST_LOG_TRIVIAL(info) << data_path;
+    BOOST_LOG_TRIVIAL(info) << tokens.size();
+
     std::vector<std::string> values;
-    boost::split(values, tokens[2], boost::is_any_of("="));
-    if (values.size() == 2)
+    // Handle token size for deployment or local development
+    if (tokens.size() == 5) 
+    {
+      boost::split(values, tokens[4], boost::is_any_of("="));
+    }
+    else if (tokens.size() == 2) 
+    {
+      boost::split(values, tokens[2], boost::is_any_of("="));
+    }
+    else 
+    {
+      BOOST_LOG_TRIVIAL(info) << "Malformed Request";
+      http_response->result(http::status::not_found);
+      http_response->prepare_payload();
+      return true;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << values.size();
+
+    if (values.size() == 2 || values.size() == 5)
     {
 
       std::string password = values[1];
       std::string username = values[0];
-      std::string new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+      std::string new_path = "";
+
+      if (values.size() == 5)
+      {
+        new_path = tokens[0] + "/" + tokens[1] + "/" + tokens[2] + "/" + tokens[3] + "/" + username;
+      }
+      else 
+      {
+        new_path = tokens[0] + "/" + tokens[1] + "/" + username;
+      }
+
       size_t hashed_password = boost::hash<std::string>{}(password);
 
       std::string uri = "/rplacedata/" + username + "/" + "1";
