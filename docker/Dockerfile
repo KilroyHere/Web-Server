@@ -21,9 +21,10 @@ COPY --from=builder /usr/src/project/folder1 ./folder1
 COPY --from=builder /usr/src/project/folder2 ./folder2
 COPY --from=builder /usr/src/project/folder3 ./folder3
 COPY --from=builder /usr/src/project/rplacefiles_deploy ./rplacefiles_deploy
-COPY --from=builder /usr/src/project/crud ./mnt/storage/crud
-COPY --from=builder /usr/src/project/rplacecrud ./mnt/storage/rplacecrud
-COPY --from=builder /usr/src/project/rplaceusers ./mnt/storage/rplaceusers
+
+RUN mkdir -p mnt/storage/crud
+RUN mkdir -p mnt/storage/rplacecrud
+RUN mkdir -p mnt/storage/rplaceusers
 
 EXPOSE 8080 80
 
