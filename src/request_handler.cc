@@ -95,25 +95,25 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       length++;
     }
   }
+  //TODO: Commenting out for testing purposes. Uncomment and fix when resolved.
+  // if (complete_uri[complete_uri.length() - 1] == '/' && http_request.method() != http::verb::post)
+  // {
+  //   BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+  //   http_response->result(http::status::bad_request);
+  //   http_response->body() = "400: Bad Request. The ID is invalid.";
+  //   http_response->prepare_payload();
+  //   return true;
+  // }
 
-  if (complete_uri[complete_uri.length() - 1] == '/' && http_request.method() != http::verb::post)
-  {
-    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
-    http_response->result(http::status::bad_request);
-    http_response->body() = "400: Bad Request. The ID is invalid.";
-    http_response->prepare_payload();
-    return true;
-  }
-
-  // Incorrect length of URI, malformed request
-  if (length != 2 && length != 3)
-  {
-    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
-    http_response->result(http::status::bad_request);
-    http_response->body() = "400: Bad Request. The ID is invalid.";
-    http_response->prepare_payload();
-    return true;
-  }
+  // // Incorrect length of URI, malformed request
+  // if (length != 2 && length != 3)
+  // {
+  //   BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+  //   http_response->result(http::status::bad_request);
+  //   http_response->body() = "400: Bad Request. The ID is invalid.";
+  //   http_response->prepare_payload();
+  //   return true;
+  // }
 
   if (http_request.method() == http::verb::post)
   { // POST method
@@ -414,7 +414,7 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
 
     if (values.size() == 2)
     {
-
+      BOOST_LOG_TRIVIAL(info) << "Well formed Request received";
       std::string password = values[1];
       std::string username = values[0];
       std::string new_path = tokens[0] + "/" + tokens[1] + "/" + username;
@@ -429,6 +429,13 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
       crh.handle_request(req_1, &res_1);
 
       // found file
+      if (res_1.result() == http::status::not_found)
+      {
+        BOOST_LOG_TRIVIAL(info) << "Couldn't find file";
+        http_response->result(http::status::not_found);
+        http_response->prepare_payload();
+        return true;
+      }
       if (res_1.result() == http::status::ok)
       {
         std::stringstream ss2;
@@ -446,6 +453,7 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
       }
     }
     // incorrect password
+    BOOST_LOG_TRIVIAL(info) << "Incorrect Password";
     http_response->result(http::status::not_found);
     http_response->prepare_payload();
     return true;
