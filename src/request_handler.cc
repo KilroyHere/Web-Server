@@ -409,8 +409,13 @@ bool AuthenticationRequestHandler::handle_request(const http::request<http::stri
     std::vector<std::string> tokens;
     boost::split(tokens, data_path, boost::is_any_of("/"));
 
+    BOOST_LOG_TRIVIAL(info) << data_path;
+    BOOST_LOG_TRIVIAL(info) << tokens.size();
+    
     std::vector<std::string> values;
     boost::split(values, tokens[2], boost::is_any_of("="));
+
+    BOOST_LOG_TRIVIAL(info) << values.size();
 
     if (values.size() == 2)
     {
