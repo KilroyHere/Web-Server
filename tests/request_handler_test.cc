@@ -23,6 +23,10 @@ protected:
   {
     boost::filesystem::path dir_to_remove("../folder4");
     boost::filesystem::remove_all(dir_to_remove);
+
+    boost::filesystem::path dir_to_remove2("../folder5");
+    boost::filesystem::remove_all(dir_to_remove2);
+    
   }
   NginxConfigParser parser;
   NginxConfig out_config;
@@ -673,65 +677,65 @@ TEST_F(RequestHandlerTest, multiple_thread_request_crud)
   EXPECT_TRUE(res.result() == http::status::ok);
 }
 
-// TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_too_long)
-// {
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::post, "/api/Shoes/big/sock/2", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_too_long)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/api/Shoes/big/sock/2", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
 
-//   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
-//   EXPECT_TRUE(res.result() == http::status::bad_request);
-// }
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
 
-// TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_short)
-// {
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::post, "/api", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, bad_crud_incorrect_length_uri_short)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/api", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
 
-//   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
-//   EXPECT_TRUE(res.result() == http::status::bad_request);
-// }
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
 
-// TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_get)
-// {
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::get, "/api/shoes/", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_get)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
 
-//   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
-//   EXPECT_TRUE(res.result() == http::status::bad_request);
-// }
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
 
-// TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_put)
-// {
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::put, "/api/shoes/", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_put)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::put, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
 
-//   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
-//   EXPECT_TRUE(res.result() == http::status::bad_request);
-// }
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
 
-// TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_delete)
-// {
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::delete_, "/api/shoes/", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, bad_crud_incorrect_uri_delete)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::delete_, "/api/shoes/", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
 
-//   EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
-//   EXPECT_TRUE(res.result() == http::status::bad_request);
-// }
+  EXPECT_TRUE(res.body() == "400: Bad Request. The ID is invalid.");
+  EXPECT_TRUE(res.result() == http::status::bad_request);
+}
 
 TEST_F(RequestHandlerTest, get_name_of_echo_request_handler)
 {
@@ -809,26 +813,156 @@ TEST_F(RequestHandlerTest, get_name_of_sleep_request_handler)
   EXPECT_TRUE(name == expected_name);
 }
 
-// TEST_F(RequestHandlerTest, r_place_request_handler)
-// {
-//   size_t bytes_transferred;
-//   std::vector<char> response_data;
-//   std::string file_path = "./request_handler_tests/r_place";
-//   std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
-//   std::string body = "";
-//   char c;
-//   while (file.get(c))
-//     body += c;
-//   file.close();
-//   RequestHandlerFactory nhf(out_config);
-//   http::request<http::string_body> req{http::verb::get, "/rplace/index.html", 10};
-//   std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
-//   std::string name = handler->get_name();
-//   std::string expected_name = "StaticRequestHandler";
-//   http::response<http::string_body> res;
-//   handler->handle_request(req, &res);
+TEST_F(RequestHandlerTest, r_place_request_handler)
+{
+  size_t bytes_transferred;
+  std::vector<char> response_data;
+  std::string file_path = "./request_handler_tests/r_place";
+  std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
+  std::string body = "";
+  char c;
+  while (file.get(c))
+    body += c;
+  file.close();
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::get, "/rplace/index.html", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "StaticRequestHandler";
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
   
-//   EXPECT_TRUE(name == expected_name);
-//   EXPECT_TRUE(res.body() == body);
-//   EXPECT_TRUE(res.result() == http::status::ok);
-// }
+  EXPECT_TRUE(name == expected_name);
+  EXPECT_TRUE(res.body() == body);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_post)
+{
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/rplaceuser/cc", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "AuthenticationRequestHandler";
+  req.body() = "username=cc&password=cc";
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(name == expected_name);
+  EXPECT_TRUE(res.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_post_user_exist)
+{
+  // First Add User
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/rplaceuser/cc", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "AuthenticationRequestHandler";
+  http::response<http::string_body> res;
+  req.body() = "username=cc&password=cc";
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(name == expected_name);
+  EXPECT_TRUE(res.result() == http::status::ok);
+
+  // Re Add User - Should not allow it
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req);
+  http::response<http::string_body> res_2;
+  handler2->handle_request(req, &res_2);
+  EXPECT_TRUE(res_2.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_get)
+{
+  // Add user
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/rplaceuser/cc", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "AuthenticationRequestHandler";
+  req.body() = "username=cc&password=cc";
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(name == expected_name);
+  EXPECT_TRUE(res.result() == http::status::ok);
+
+  // Search for user
+  http::request<http::string_body> req2{http::verb::get, "/rplaceuser/cc=cc", 10};
+  http::response<http::string_body> res2;
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);  
+  handler2->handle_request(req2, &res2);
+  EXPECT_TRUE(res2.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_get_no_user)
+{
+  // Search for user
+  http::request<http::string_body> req{http::verb::get, "/rplaceuser/cc=cc", 10};
+  http::response<http::string_body> res;
+  RequestHandlerFactory nhf(out_config);
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_put_unknown_user)
+{
+  // Search for user
+  http::request<http::string_body> req{http::verb::put, "/rplaceuser/cc=cc", 10};
+  http::response<http::string_body> res;
+  RequestHandlerFactory nhf(out_config);
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_put_known_user)
+{
+  // Add user
+  RequestHandlerFactory nhf(out_config);
+  http::request<http::string_body> req{http::verb::post, "/rplaceuser/cc", 10};
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  std::string name = handler->get_name();
+  std::string expected_name = "AuthenticationRequestHandler";
+  req.body() = "username=cc&password=cc";
+  http::response<http::string_body> res;
+  handler->handle_request(req, &res);
+  
+  EXPECT_TRUE(name == expected_name);
+  EXPECT_TRUE(res.result() == http::status::ok);
+
+  // Search for user
+  http::request<http::string_body> req2{http::verb::put, "/rplaceuser/cc=778985007725400056", 10};
+  http::response<http::string_body> res2;
+  std::unique_ptr<RequestHandler> handler2 = nhf.createHandler(&req2);  
+  handler2->handle_request(req2, &res2);
+  EXPECT_TRUE(res2.result() == http::status::ok);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_put_wrong_length_tokens)
+{
+  // Search for user
+  http::request<http::string_body> req{http::verb::put, "../rplaceuser/cc=cc", 10};
+  http::response<http::string_body> res;
+  RequestHandlerFactory nhf(out_config);
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+TEST_F(RequestHandlerTest, authentication_request_handler_get_wrong_length_tokens)
+{
+  // Search for user
+  http::request<http::string_body> req{http::verb::get, "../rplaceuser/cc=cc", 10};
+  http::response<http::string_body> res;
+  RequestHandlerFactory nhf(out_config);
+  std::unique_ptr<RequestHandler> handler = nhf.createHandler(&req);
+  handler->handle_request(req, &res);
+  EXPECT_TRUE(res.result() == http::status::not_found);
+}
+
+
+

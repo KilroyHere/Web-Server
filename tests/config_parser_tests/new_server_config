@@ -32,3 +32,7 @@ location /rplace StaticRequestHandler {
 location /rplacedata CrudRequestHandler {
   root ./rplacecrud; # supports relative paths
 }
+
+location /rplaceuser AuthenticationRequestHandler {
+  root ./folder5; # supports relative paths
+}

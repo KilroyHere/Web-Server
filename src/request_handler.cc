@@ -95,25 +95,25 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       length++;
     }
   }
-  //TODO: Commenting out for testing purposes. Uncomment and fix when resolved.
-  // if (complete_uri[complete_uri.length() - 1] == '/' && http_request.method() != http::verb::post)
-  // {
-  //   BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
-  //   http_response->result(http::status::bad_request);
-  //   http_response->body() = "400: Bad Request. The ID is invalid.";
-  //   http_response->prepare_payload();
-  //   return true;
-  // }
 
-  // // Incorrect length of URI, malformed request
-  // if (length != 2 && length != 3)
-  // {
-  //   BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
-  //   http_response->result(http::status::bad_request);
-  //   http_response->body() = "400: Bad Request. The ID is invalid.";
-  //   http_response->prepare_payload();
-  //   return true;
-  // }
+  if (complete_uri[complete_uri.length() - 1] == '/' && http_request.method() != http::verb::post)
+  {
+    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+    http_response->result(http::status::bad_request);
+    http_response->body() = "400: Bad Request. The ID is invalid.";
+    http_response->prepare_payload();
+    return true;
+  }
+
+  // Incorrect length of URI, malformed request
+  if (length != 2 && length != 3)
+  {
+    BOOST_LOG_TRIVIAL(warning) << "Request does not contain a valid URI";
+    http_response->result(http::status::bad_request);
+    http_response->body() = "400: Bad Request. The ID is invalid.";
+    http_response->prepare_payload();
+    return true;
+  }
 
   if (http_request.method() == http::verb::post)
   { // POST method
