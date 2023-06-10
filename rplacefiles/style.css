@@ -5,16 +5,24 @@
   font-family: "Roboto Mono", monospace;
 }
 
+h1{
+  text-shadow: -0.06em 0 rgb(195, 126, 126),  0.06em 0 cyan; 
+ text-align: center;
+ padding: 0.5em 0.5em;
+ padding-top: 0;
+ font-size: 2.5rem;
+}
 body {
-  background-color: #f4c531;
+  background-color: #abd4db;
   width: fit-content;
   margin: 0 auto;
+  padding: 10px 10px;
   /* Center horizontally */
 }
 
 .wrapper {
   background-color: #ffffff;
-  padding: 40px 20px;
+  padding: 20px 20px;
   border-radius: 8px;
 }
 
@@ -36,15 +44,18 @@ span {
 }
 
 button {
-  background-color: #f4c531;
+  text-shadow: -0.05em 0.05em  rgb(246, 246, 246);
+  font-size: large;
+  background-color: #dbaea9;
   border: none;
   border-radius: 5px;
   padding: 5px;
   width: 150px;
+  box-shadow: 0.1em red;
 }
 
 button:hover {
-  background-color: #901818 !important;
+  background-color: #c05a5a !important;
   cursor: pointer;
 }
 
@@ -78,9 +89,9 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .gridCol:hover {
-  /* border: dashed grey; */
-  /* border-width: 1px; */
-  background-color: gray !important;
+  border: dashed grey; 
+  border-width: 1px;
+  /* background-color: gray !important; */
 }
 
 .gridRow {
@@ -95,7 +106,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .container {
-  border: solid black;
+  border: solid black 4px;
   margin: auto;
   width: fit-content;
 }

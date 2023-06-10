@@ -31,7 +31,7 @@ bool EchoRequestHandler::handle_request(const http::request<http::string_body> h
 bool StaticRequestHandler::handle_request(const http::request<http::string_body> http_request, http::response<http::string_body> *http_response)
 {
   // read file contents
-  // std::lock_guard<std::mutex> lock(mutex_file);
+  std::lock_guard<std::mutex> lock(mutex_file);
   std::ifstream file(file_path.c_str(), std::ios::in | std::ios::binary);
   if (file.fail())
   {
@@ -121,7 +121,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
     boost::filesystem::path path(data_path);
 
     // Create data_path directory if it doesn't already exist
-    // std::lock_guard<std::mutex> lock(mutex_file);
+    std::lock_guard<std::mutex> lock(mutex_file);
     if (!boost::filesystem::exists(path))
     {
       BOOST_LOG_TRIVIAL(info) << "Creating data_path directory: " << data_path;
@@ -182,7 +182,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
         http_response->prepare_payload();
         return true;
       }
-      // std::lock_guard<std::mutex> lock(mutex_file);
+      std::lock_guard<std::mutex> lock(mutex_file);
       boost::filesystem::path path = data_path / boost::filesystem::path(std::to_string(id));
       std::ifstream file(path.string(), std::ios::in | std::ios::binary);
       if (file.fail())
@@ -283,7 +283,7 @@ bool CrudRequestHandler::handle_request(const http::request<http::string_body> h
       BOOST_LOG_TRIVIAL(info) << "Creating data_path directory: " << data_path;
       boost::filesystem::create_directories(dir);
     }
-    // std::lock_guard<std::mutex> lock(mutex_file);
+    std::lock_guard<std::mutex> lock(mutex_file);
     std::ofstream file(path.string(), std::ios::out | std::ios::binary | std::ios::trunc);
     if (file.fail())
     {
